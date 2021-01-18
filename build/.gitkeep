@@ -1,0 +1,6 @@
+
+# Ignore everything in this directory 
+
+项目编译目录，各种编译的临时文件和最终的目标文件皆存于此，分为debug/和release/子目录
+
+# Except this file !.gitkeep 
