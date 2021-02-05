@@ -15,3 +15,8 @@ build/
 */result/
 */__pycache__/
 .vscode
+*vcxproj*
+ALL_BUILD.*
+*.cmake
+CMakeCache.txt
+CMakeFiles/
