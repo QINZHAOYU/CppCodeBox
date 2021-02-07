@@ -16,13 +16,25 @@
 *  --------------------------------------------------------------------------------
 *
 ** ********************************************************************************/
-#include "common/CommHeader.h"
+#include "core/AppRunFlow.h"
 
 
 
 int main(int argc, const char *argv[])
 {
-    printf("Hello 2021, let's do it!")
+    int state = 0;
 
-        return 0;
+    try
+    {
+        AppRunFlow task;
+        state = task.run(argc, argv);
+        for(auto &it: task.appInfo())
+            printf("%f: %f\n", it->first, it->second);
+
+    }catch(...)
+    {
+        printf("---*--- Task Run Failed.\n");
+    }
+
+    return state;
 }

@@ -36,12 +36,12 @@ public:
     /**
     * @brief   获取程序计算总步数。
     */
-    virtual size_t getTotalSteps() {return m_step;}
+    virtual size_t getTotalSteps() const {return m_step;}
 
     /**
     * @brief   获取程序基本信息,包括关键字{"name", "desc", "version", "author"}。 
     */
-    virtual map<string, string>  appInfo();
+    virtual map<string, string>  appInfo() const;
 
 protected:
     ////////////////////////////////////////////////////////////////
