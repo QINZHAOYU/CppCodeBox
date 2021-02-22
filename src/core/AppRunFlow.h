@@ -6,6 +6,7 @@
 *    @Version   :  1.0
 *    @Date      :  2021/02/05
 *    @Author    :  Qin ZhaoYu 
+*    @Email     :  zhaoyu.qin@foxmail.com
 *
 *    @Desc      :  抽象程序运行流程，规范后续模块接口开发，实现统一实现逻辑和交互接口。
 *
@@ -20,7 +21,7 @@
 #define APP_RUN_FLOW_H
 
 
-#include "common/CommHeader.h"
+#include "../common/CommHeader.h"
 
 
 class AppRunFlow

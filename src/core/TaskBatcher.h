@@ -6,6 +6,7 @@
 *    @Version   :  1.0
 *    @Date      :  2021/02/05
 *    @Author    :  Qin ZhaoYu 
+*    @Email     :  zhaoyu.qin@foxmail.com
 *
 *    @Desc      :  任务批处理器，实现注册机，命令行多任务批处理，同时提供各任务统计信息。 
 *
