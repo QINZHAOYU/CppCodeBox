@@ -1,69 +1,82 @@
-cmake_minimum_required(VERSION 3.1)
-project(CppCodeBox VERSION 0.1)
+cmake_minimum_required(VERSION 3.10)
+
+# set the project name and version
+project(CppCodeBox VERSION 1.0)
+
 
 message("--------------------------------------------------")
 message("---*--- CppCodeBox ver: ${PROJECT_VERSION} ---*---")
 message("--------------------------------------------------")
 
-if (NOT (CMAKE_SIZEOF_VOID_P EQUAL 8))
-    message("x86 are not supported, turn to x64.")
-    set(BUILD_USE_64BITS on)
-endif()
 
-if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
-
+# specify the C++ standard
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-option(SINGLE_EXE  "compile to a single executables" ON)
-option(ENABLE_HELLO "add HelloDemo to CppCodeBox"  ON)
+# control where the static and shared libraries are built to
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+# wether to build shared libraries
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
-set(src_dir  "src")
-set(core_dir ${src_dir}/core)
-set(common_dir ${src_dir}/common)
-set(model_dir ${src_dir}/model)
-set(hello_dir ${model_dir}/hello)
-set(include_dir ${CMAKE_SOURCE_DIR}/tools)
+# configure a header file to pass the version number only
+configure_file(CppCodeBoxConfig.h.in CppCodeBoxConfig.h)
 
-file(GLOB driver "main.cpp")
-file(GLOB_RECURSE src_files ${core_dir}/*.cpp ${common_dir}/*.cpp)
-file(GLOB_RECURSE inc_files ${core_dir}/*.h   ${common_dir}/*.h)
+# wether add optional sublibrary
+option(USE_HELLO "use hello module" ON)
 
-set(target "${PROJECT_NAME}")
-add_executable(${target} ${dirvier} ${src_files} ${inc_files})
-set_target_properties(${target}
-    PROPERTIES LINKER_LANGUAGE CXX
-)
-
-target_include_directories(${target} PUBLIC
-    ${src_dir}
-    ${include_dir}
-    ${model_dir}
-)
-
-add_compile_definitions(
-    CCB_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
-    CCB_VERSION_MINOR=${PROJECT_VERSION_MINOR}
-    CCB_VERSION_PATCH=${PROJECT_VERSION_PATCH}
-    ENABLE_HELLO=${ENABLE_HELLO}
-)
-
-if (ENABLE_HELLO)
-    add_subdirectory(${hello_dir})
+# optional sublibrary
+if(USE_HELLO)
+  # add subdirectory to the project building
+  add_subdirectory(src/model/hello) 
+  # collect optional libraries that needed to the running program
+  list(APPEND EXTRA_LIBS HelloLib) 
 endif()
 
-if (ENABLE_HELLO)
-    target_link_directories(${target} PUBLIC hello)
-endif()
+# add the executable
+add_executable(CppCodeBox CppCodeBox.cpp)
+target_link_libraries(CppCodeBox PUBLIC ${EXTRA_LIBS})
 
-target_link_libraries(${target} PUBLIC
-    ${PLATFORM_LIBRARIES}
+# add the binary tree to the search path for include files
+target_include_directories(CppCodeBox PUBLIC
+                           "${PROJECT_BINARY_DIR}"
+                           "${PROJECT_SOURCE_DIR}/src"
 )
 
-if (NOT MSVC)
-    set(CMAKE_CXX_FLAGS_DEBUG   "-Og -D_DEBUG -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DNDEBUG")
-endif()
+# add the install targets
+set(CMAKE_INSTALL_PREFIX  ${PROJECT_SOURCE_DIR})
+install(TARGETS CppCodeBox DESTINATION bin/hello)
+install(FILES "${PROJECT_BINARY_DIR}/CppCodeBoxConfig.h"
+  DESTINATION bin/hello
+)
+
+# enable testing
+include(CTest)
+
+# define a function to simplify adding tests
+function(do_test target arg result)
+  add_test(NAME CASE${arg} COMMAND ${target} ${arg})
+  set_tests_properties(CASE${arg}
+    PROPERTIES PASS_REGULAR_EXPRESSION ${result}
+  )
+endfunction(do_test)
+
+# do a bunch of result based tests
+do_test(CppCodeBox 4 "4 is 2")
+do_test(CppCodeBox 9 "9 is 3")
+
+# provide both binary and source distributions, and license 
+include(InstallRequiredSystemLibraries)
+set(CPACK_PACKAGE_DIRECTORY ${PROJECT_SOURCE_DIR}/dist)
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/NOTICE.txt")
+set(CPACK_PACKAGE_VERSION_MAJOR "${CppCodeBox_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${CppCodeBox_VERSION_MINOR}")
+set(CPACK_SOURCE_IGNORE_FILES
+  ${PROJECT_SOURCE_DIR}/build
+  ${PROJECT_SOURCE_DIR}/dist 
+  ${PROJECT_SOURCE_DIR}/.git
+  ${PROJECT_SOURCE_DIR}/.gitignore 
+)
+include(CPack)

@@ -1,6 +1,6 @@
 /** *******************************************************************************
 *    @File      :  AppRunFlow.cpp
-*    @Brief     :  抽象程序运行流程的基本实现。
+*    @Brief     :  程序抽象运行流程的基本实现。
 *
 ** ********************************************************************************/
 #include "AppRunFlow.h"
@@ -16,10 +16,9 @@ int AppRunFlow::run(int argc, const char* argv[])
     {
         inLoopPreStep();
         step();
-        ++m_step;
         inLoopPostStep();
     }
-    postLoop()
+    postLoop();
 
     clear();
     return 0;
@@ -34,16 +33,14 @@ void AppRunFlow::step()
 }
 
 
-map<string, string>  AppRunFlow::appInfo()
+string  AppRunFlow::appInfo(const string &item) const
 {
-    map<string, string> info;
-    
-    info["name"] = "";
-    info["desc"] = "";
-    info.insert(std::pair<string, string>("version", ""));
-    info.insert(std::pair<string, string>("author", ""));
+    auto info = m_info.find(item);
+    if(info != m_info.end()){
+        return info->second;
+    }
 
-    return info;
+    return "";
 }
 
 

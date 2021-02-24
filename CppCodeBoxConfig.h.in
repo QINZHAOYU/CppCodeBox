@@ -1,0 +1,3 @@
+// 配置项目的版本信息
+#define CppCodeBox_VERSION_MAJOR @CppCodeBox_VERSION_MAJOR@
+#define CppCodeBox_VERSION_MINOR @CppCodeBox_VERSION_MINOR@

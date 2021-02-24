@@ -1,55 +1,73 @@
+/** *****************************************************************************
+*    @File      :  HelloDemo.cpp
+*    @Brief     :  None.
+*
+** ******************************************************************************/
+#include "core/ModelRegister.h"
 #include "HelloDemo.h"
+
+
+#define HELLO "hello"
+MODEL_REGISTER(HELLO, hello::HelloModel)
+
 
 namespace hello
 {
-    int HelloDemo::run(int argc, const char* argv[])
+    int HelloModel::run(int argc, const char* argv[])
     {
         prologue();
 
         while(!terminated())
         {
             step();
-            m_step ++;
         }
 
         return 0;
     }
 
-    map<string, string> HelloDemo::appInfo()
-    {
-        map<string, string> info;
-    
-        info["name"] = "HelloDemo";
-        info["desc"] = "used for cmake practice";
-        info.insert(std::pair<string, string>("version", "0.1"));
-        info.insert(std::pair<string, string>("author", "Qin ZhaoYu"));
-    
-        return info;
+    MapStrStr HelloModel::appInfo() const
+    {    
+        return m_info;
     }
 
-    void HelloDemo::prologue()
+    void HelloModel::prologue()
     {
         printf("=================================================\n");
-        printf("--- * --- HelloDemo, ver0.1, Qin ZhaoYu --- * ---\n");
-        printf("=================================================\n\n");
+        printf("--- * --- HelloModel, ver0.1 --- * ---\n");
+        printf("=================================================\n");
+
+        m_info["name"] = "HelloModel";
+        m_info["desc"] = "used for cmake practice";
+        m_info.insert(std::pair<string, string>("ver", "0.1"));
+        m_info.insert(std::pair<string, string>("author", "Qin ZhaoYu"));        
     }
 
-    bool HelloDemo::terminated()
+    void HelloModel::parseCmd(int argc, const char *argv[])
     {
-        if (m_isStopping || m_step > 1)
+        if(argc < 2)
+            m_cmdStr = "Empty cmd args.";
+        
+        for(int i=1; i < argc; ++i)
+            m_cmdStr += string(argv[i]);      
+    }
+
+    bool HelloModel::terminated()
+    {
+        if (m_isStop || m_step > 1)
             return true;
         else
             return false;
     }
 
-    void HelloDemo::step()
+    void HelloModel::step()
     {
         scheme();
-        m_isStopping = true;
+        m_step++;
     }
 
-    void HelloDemo::scheme()
-    {
-        printf("This a demo for testing new framwork.\n")
+    void HelloModel::scheme()
+    {        
+        printf("Command Line: %s\n", m_cmdStr.c_str());
+        m_isStop = true;
     }
 }
