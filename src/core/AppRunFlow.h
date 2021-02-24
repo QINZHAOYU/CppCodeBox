@@ -40,7 +40,7 @@ public:
     * @param[in] tokens    程序初始化参数集。
     * @return  如果加载成功则返回True;否则，返回False。
     */
-    virtual bool       load(const VecStr tokens) {return false;}
+    virtual bool       load(const VecStr &tokens) {return false;}
 
     /**
     * @brief   分步运行时，执行步进运算。
@@ -48,7 +48,7 @@ public:
     * @param[in] i         当前步。
     * @return  如果当前步运行成功则返回True;否则，返回False。
     */    
-    virtual bool       runByStep(int i)          {return false;}
+    virtual bool       runByStep(int i)           {return false;}
 
     /**
     * @brief   分步运行时，设置程序状态变量或常量。
