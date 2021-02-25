@@ -21,6 +21,7 @@
 #define TASK_BATCHER_H
 
 #include "common/CommHeader.h"
+#include "AppRunFlow.h"
 
 
 class TaskBatcher
@@ -53,7 +54,7 @@ private:
     int                     m_ver;       ///< 任务批处理器版本
     string                  m_cmdFmt;    ///< 命令行参数输入格式
     VecVecChar              m_cmdGroup;  ///< 命令行参数分组集合m_ver
-    vector<TaskStats>       m_statses;     ///< 任务统计信息
+    vector<TaskStats>       m_statses;   ///< 任务统计信息
 };
 
 

@@ -4,16 +4,18 @@
 *
 ** ********************************************************************************/
 #include <chrono>
-#include "TaskBatcher.h"
-#include "AppRunFlow.h"
+#include <string.h>
 #include "ModelRegister.h"
+#include "AppRunFlow.h"
+#include "TaskBatcher.h"
 
-using namespace chrono;
+
+using namespace std::chrono;
 
 
 TaskBatcher::TaskBatcher(int argc, const char* argv[])
 {
-    m_ver = 1.0；
+    m_ver = 1.0;
     m_cmdFmt = "<ExeFile> // <model> arg1 arg2 ... // <model> arg1 arg2 ...\n";
     
     parseCmd(argc, argv);
@@ -33,7 +35,7 @@ bool TaskBatcher::run()
 
         string name = args[0];
         AppRunFlow* app = ModelRegister::getInstance()->create(name);
-        int state = app->run(args.size(), args);
+        int state = app->run(args.size(), &args[0]);
 
         auto end = system_clock::now();
         auto duration = duration_cast<microseconds>(end - start);
@@ -60,6 +62,8 @@ void TaskBatcher::parseCmd(int argc, const char* argv[])
             args.push_back(argv[i]);
         }            
     }
+
+    if(m_cmdGroup.size() < 2) helper();
 }
 
 MapStrDbl TaskBatcher::getTaskStats(int i)
@@ -74,21 +78,12 @@ MapStrDbl TaskBatcher::getTaskStats(int i)
     return stats;
 }
 
-void TaskBatcher::helper(const string &item)
+void TaskBatcher::helper()
 {
-    switch(item)
-    {
-        case "-v":
-        case "-ver":
-        case "-version":
-            cout<<"Task Batcher Version: "<<m_ver<<endl;
-            break;
-        case "-f":
-        case "-fmt":
-        case "-format":
-            cout<<"Task Batcher Format: "<<m_cmdFmt<<endl;
-            break;
-        default:
-            cout<<"Please input -ver or -fmt to get help.\n";
-    }
+    std::cout<<"---*--- Task Batcher ---*---\n";
+
+    std::cout<<"::=> Version: "<<m_ver<<std::endl;
+    std::cout<<"::=> Format: "<<m_cmdFmt<<std::endl;
+
+    std::cout<<"----------------------------\n";
 }

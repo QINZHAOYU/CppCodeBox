@@ -21,13 +21,14 @@
 
 #include "common/CommHeader.h"
 
-class AppFunFlow;
+class AppRunFlow;
 
 
 class ModelFactory
 {
 public:
-    virtual AppFunFlow* create()=0;
+    virtual ~ModelFactory()     {}
+    virtual AppRunFlow* create()=0;
 };
 
 
@@ -36,7 +37,7 @@ class ModelRegister
 public:
     void registerModel(const string &name, ModelFactory* factory);
     bool hasModel(const string &name);
-    AppFunFlow* create(const string &name);
+    AppRunFlow* create(const string &name);
     static ModelRegister* getInstance();
 
 private:
@@ -48,7 +49,7 @@ template<class ModelType>
 class AutoModelFactory: public ModelFactory
 {
 public:
-    AppFunFlow* create() override
+    AppRunFlow* create() override
     {
         return new ModelType();
     }
@@ -62,7 +63,7 @@ public:
     AutoModelRegister(const string &name)
     {
         ModelRegister::getInstance()->registerModel(name, 
-            new ModelFactory<ModelType>);
+            new AutoModelFactory<ModelType>());
     }
 };
 
