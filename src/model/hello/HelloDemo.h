@@ -20,6 +20,7 @@
 #ifndef HELLO_DEMO_H
 #define HELLO_DEMO_H
 
+#define _DLL_EXPORTS
 #include "core/AppRunFlow.h"
 
 
@@ -42,6 +43,13 @@ namespace hello
         string     m_cmdStr;
         size_t     m_step;
     };
+}
+
+
+// 导出动态库。
+extern "C" DLL_API  AppRunFlow* createApp()
+{
+    return new hello::HelloModel();
 }
 
 

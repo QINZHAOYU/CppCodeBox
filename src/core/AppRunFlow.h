@@ -20,6 +20,12 @@
 #ifndef APP_RUN_FLOW_H
 #define APP_RUN_FLOW_H
 
+#ifdef _DLL_EXPORTS
+#define DLL_API __declspec(dllexport)
+#else
+#define DLL_API __declspec(dllimport)
+#endif
+
 
 #include "common/CommHeader.h"
 
@@ -27,6 +33,9 @@
 class AppRunFlow
 {
 public:
+    AppRunFlow();
+    virtual ~AppRunFlow();
+
     /**
     * @brief   命令行调用程序，封装程序运行全过程。 
     * 
@@ -74,8 +83,6 @@ public:
     virtual string     appInfo(const string &item) const;
 
 protected:
-    AppRunFlow();
-
     ////////////////////////////////////////////////////////////////
     // 参数解析与运行监视
     //
@@ -124,6 +131,11 @@ protected:
     MapStrVec    m_states;    ///< 状态数据集。
     MapStrStr    m_info;      ///< 程序基本信息。
 };
+
+
+// 提供动态库导出接口
+extern "C" DLL_API  AppRunFlow* createApp();
+extern "C" DLL_API  void        deleteApp(AppRunFlow* app) {if(!app) delete app;}
 
 
 #endif
