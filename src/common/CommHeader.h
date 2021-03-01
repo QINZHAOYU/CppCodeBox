@@ -14,6 +14,8 @@ using std::array;
 using std::map;
 using std::string;
 using std::shared_ptr;
+using std::cout;
+using std::endl;
 
 using VecDbl     =  vector<double>;
 using VecVecDbl  =  vector<vector<double>>;
@@ -21,6 +23,7 @@ using VecInt     =  vector<int>;
 using VecVecInt  =  vector<vector<int>>;
 using VecStr     =  vector<string>;
 using VecVecStr  =  vector<vector<string>>;
+using MapIntStr  =  map<int, string>;
 using MapStrStr  =  map<string, string>;
 using MapStrDbl  =  map<string, double>;
 using MapStrVec  =  map<string, VecDbl>;

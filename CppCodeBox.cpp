@@ -31,11 +31,15 @@ int main(int argc, const char *argv[])
 
         int state = (tasks.init())?tasks.run():false;
 
-        printf("---*--- Task Run Done.\n");
+        if(state == 0) 
+            cout<<"run tasks sucessed";
+        else
+            cout<<"run tasks failed.";
+        cout<<"---*--- Task Run Done.\n";
 
     }catch(...)
     {
-        printf("---*--- Task Run Failed.\n");
+       cout<<"---*--- Task Run Failed.\n";
     }
 
     return state;

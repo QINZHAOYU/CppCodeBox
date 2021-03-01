@@ -32,29 +32,21 @@ public:
     bool init();
     bool run();
 
-    MapStrDbl getTaskStats(int i);  
+    MapStrDbl getTaskStatus(int i);  
 
 private:
     void parseCmd(int argc, const char* argv[]);
-    void helper();
+    void help();
 
 private:
     using VecVecChar = vector<vector<const char*>>;
     using VecChar    = vector<const char*>;
 
-    struct TaskStats
-    {
-        double   isFailed;     // 任务是否执行成功（=0, 成功；non-0，失败）
-        double   timeCost;     // 任务耗时（ms）
-        double   MaxMemCost;   // 任务最大内存占用（kB）
-        double   AveMemCost;   // 任务平均内存占用（KB）
-    };
-
 private:
-    int                     m_ver;       ///< 任务批处理器版本
-    string                  m_cmdFmt;    ///< 命令行参数输入格式
-    VecVecChar              m_cmdGroup;  ///< 命令行参数分组集合m_ver
-    vector<TaskStats>       m_statses;   ///< 任务统计信息
+    int                     m_verion;    // 任务批处理器版本
+    string                  m_cmdFmt;    // 命令行参数输入格式
+    VecVecChar              m_cmdGroup;  // 命令行参数分组集合m_ver
+    vector<MapStrDbl>       m_statuses;  // 任务统计信息
 };
 
 

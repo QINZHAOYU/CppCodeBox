@@ -39,7 +39,7 @@ public:
     /**
     * @brief   命令行调用程序，封装程序运行全过程。 
     * 
-    * @return  如果程序运行完成，返回 0；否则，返回 non-0 状态。
+    * @return  如果程序运行完成，返回 0；否则，返回 non-0 。
     */
     virtual int        run(int argc, const char *argv[]);
 
@@ -47,7 +47,7 @@ public:
     * @brief   分步运行时，加载配置并且初始化。
     *
     * @param[in] tokens    程序初始化参数集。
-    * @return  如果加载成功则返回True;否则，返回False。
+    * @return  如果加载成功则返回true;否则，返回false。
     */
     virtual bool       load(const VecStr &tokens) {return false;}
 
@@ -55,7 +55,7 @@ public:
     * @brief   分步运行时，执行步进运算。
     *
     * @param[in] i         当前步。
-    * @return  如果当前步运行成功则返回True;否则，返回False。
+    * @return  如果当前步运行成功则返回true;否则，返回false。
     */    
     virtual bool       runByStep(int i)           {return false;}
 
@@ -77,9 +77,14 @@ public:
     virtual size_t     getTotalSteps() const {return m_steps;}
 
     /**
+    * @brief   获取程序运行中错误报告。
+    */    
+    virtual MapIntStr  getErrorMsg()   const {return m_errs;} 
+
+    /**
     * @brief   获取程序基本信息,包括关键字{"name", "desc", "ver", "author"}。 
     */
-    virtual MapStrStr  appInfo()       const {return m_info;}
+    virtual MapStrStr  appInfo()   const {return m_info;}
     virtual string     appInfo(const string &item) const;
 
 protected:
@@ -124,12 +129,13 @@ protected:
     virtual void inStepPostScheme();
 
 protected:
-    bool         m_isInit;    ///< 状态标识符，标识程序是否初始化加载。
-    bool         m_isStop;    ///< 状态标识符，标识程序是否终止。
+    bool         m_isInit;    ///< 状态标识符，标识程序是否初始化加载
+    bool         m_isStop;    ///< 状态标识符，标识程序是否终止
 
-    size_t       m_steps;     ///< 运行总步数。   
-    MapStrVec    m_states;    ///< 状态数据集。
-    MapStrStr    m_info;      ///< 程序基本信息。
+    size_t       m_steps;     ///< 运行总步数
+    MapIntStr    m_errs;      ///< 运行错误报告 
+    MapStrVec    m_states;    ///< 状态数据集
+    MapStrStr    m_info;      ///< 程序基本信息
 };
 
 
