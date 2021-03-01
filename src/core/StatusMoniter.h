@@ -1,6 +1,6 @@
 /** *****************************************************************************
 *
-*    @File      :  AppStatusCounter.h
+*    @File      :  AppStatusMoniter.h
 *    @License   :  Apache License 2.0
 *
 *    @Version   :  1.0
@@ -17,14 +17,14 @@
 *  ------------------------------------------------------------------------------
 *
 ** ******************************************************************************/
-#ifndef APP_STATUS_COUNTER_H
-#define APP_STATUS_COUNTER_H
+#ifndef APP_STATUS_Moniter_H
+#define APP_STATUS_Moniter_H
 
 #include <chrono>
 #include "common/CommHeader.h"
 
 
-class AppStatusCounter
+class StatusMoniter
 {
 public:    
     struct AppStatus
@@ -41,17 +41,17 @@ public:
     using TimePoint = std::chrono::_V2::system_clock::time_point;
 
 public:
-    AppStatusCounter();
-    virtual ~AppStatusCounter();
+    StatusMoniter();
+    virtual ~StatusMoniter();
 
     /**
     * @brief 开始程序状态统计。
     */
-    virtual void      startCounter() =0;
+    virtual void      startMoniter() =0;
     /**
     * @brief 结束程序状态统计。
     */
-    virtual void      stopCounter(int state) =0;
+    virtual void      stopMoniter(int state) =0;
 
     /**
     * @brief 获取程序运行状态。
@@ -60,8 +60,8 @@ public:
     virtual MapStrDbl getStatus() const;
 
 protected:
-    void startAppRunTime();
-    void stopAppRunTime();
+    void startRunTime();
+    void stopRunTime();
 
 protected:
     TimePoint   m_startTime;  ///< 程序运行起始时间
@@ -75,16 +75,16 @@ protected:
 #include <psapi.h>
 
 
-class WinAppStatusCounter:public AppStatusCounter
+class WinStatusMoniter:public StatusMoniter
 {
 public:
-    void  startCounter()          override;
-    void  stopCounter(int state)  override;
+    void  startMoniter()          override;
+    void  stopMoniter(int state)  override;
 
 private:
     void startCpuTime();
     void stopCpuTime();
-    void memCostCounter();
+    void memCostMoniter();
 
     __int64 turnInt64(const FILETIME &ftime);
 
@@ -98,17 +98,47 @@ private:
 };
 
 
-
-
 #elif __linux__
-    // Nothing to do under linux.
+class LinStatusMoniter:public StatusMoniter
+{
+public:
+    void  startMoniter()          override {}
+    void  stopMoniter(int state)  override {}
+}
 #elif __APPLE__
-    // Nothing to do under apple. 
+class MacStatusMoniter:public StatusMoniter
+{
+public:
+    void  startMoniter()          override {}
+    void  stopMoniter(int state)  override {}
+} 
 #elif __ANDROID__
     // Nothing to do under android.
 #else
     printf("\n\n---*--- Unsupported System Platform. ---*---\n\n")
 #endif
+
+
+StatusMoniter* getStatusMoniter()
+{
+    StatusMoniter* moniter=nullptr;
+
+#ifdef _WIN64
+    moniter = new WinStatusMoniter();
+#elif __linux__
+    moniter = new LinStatusMoniter();
+#elif __APPLE__
+    moniter = new MacStatusMoniter();
+#endif
+
+    return moniter;
+}
+
+void delStatusMoniter(StatusMoniter* moniter)
+{
+    if(!moniter) delete moniter;
+    moniter = nullptr;
+}
 
 
 

@@ -8,19 +8,19 @@
 using namespace std::chrono;
 
 
-void  AppStatusCounter::startAppRunTime()
+void  StatusMoniter::startRunTime()
 {
     m_startTime = system_clock::now();
 }
 
-void  AppStatusCounter::startAppRunTime()
+void  StatusMoniter::startRunTime()
 {
     m_stopTime = system_clock::now();
     auto duration = duration_cast<microseconds>(m_stopTime - m_startTime);
     m_status.timeCost = double(duration.count())/1000.0;  // 转为 (ms)。
 }
 
-MapStrDbl AppStatusCounter::getStatus() const
+MapStrDbl StatusMoniter::getStatus() const
 {
     MapStrDbl status;
     status["state"]       = m_status.state;
@@ -36,27 +36,27 @@ MapStrDbl AppStatusCounter::getStatus() const
 #pragma comment(lib,"psapi.lib")
 
 
-void  WinAppStatusCounter::startCounter()
+void  WinStatusMoniter::startMoniter()
 {
-    startAppRunTime();
+    startRunTime();
     startCpuTime();
 }
 
-void  WinAppStatusCounter::stopCounter(int state)
+void  WinStatusMoniter::stopMoniter(int state)
 {
-    stopAppRunTime();   
+    stopRunTime();   
     stopCpuTime();
-    memCostCounter();
+    memCostMoniter();
 
     m_status.state = state;
 }
 
-void WinAppStatusCounter::startCpuTime()
+void WinStatusMoniter::startCpuTime()
 {
     GetSystemTimes(&m_startIdleTime, &m_startKernelTime, &m_startUserTime);
 }
 
-void WinAppStatusCounter::stopCpuTime()
+void WinStatusMoniter::stopCpuTime()
 {
     /* 获取cpu使用状态。
     *  GetSystemTimes：获取CPU的空闲、内核、用户使用时间
@@ -81,7 +81,7 @@ void WinAppStatusCounter::stopCpuTime()
     }
 }
 
-void WinAppStatusCounter::memCostCounter()
+void WinStatusMoniter::memCostMoniter()
 {
     /* 获取程序峰值内存使用。*/
     HANDLE handle = GetCurrentProcess();
@@ -100,7 +100,7 @@ void WinAppStatusCounter::memCostCounter()
     m_status.memUsage = 0.01*memStatus.dwMemoryLoad;
 }
 
-__int64 WinAppStatusCounter::turnInt64(const FILETIME &ftime)
+__int64 WinStatusMoniter::turnInt64(const FILETIME &ftime)
 {
     LARGE_INTEGER li;
     li.LowPart  = ftime.dwLowDateTime;

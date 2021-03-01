@@ -28,17 +28,14 @@ bool TaskBatcher::run()
 {
     for(auto &args: m_cmdGroup)
     {
-        AppStatusCounter* status = nullptr;
-#ifdef _WIN64
-        status = new WinAppStatusCounter();
-#endif
-        status->startCounter();
+        StatusMoniter* status = getStatusMoniter();
 
         AppRunFlow* app = ModelRegister::getInstance()->create(args[0]);
         int state = app->run(args.size(), &args[0]);
 
-        status->stopCounter(state);
+        status->stopMoniter(state);
         m_statuses.push_back(status->getStatus());
+        delStatusMoniter(status);
     }
 }
 
