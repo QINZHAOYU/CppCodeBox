@@ -1,6 +1,0 @@
-
-# Ignore everything in this directory 
-
-分发目录，最终发布的可执行程序和各种运行支持文件存放在此目录，打包此目录即可完成项目分发
-
-# Except this file !.gitkeep 
