@@ -1,7 +1,7 @@
-// #include "hello.hpp"
+#include "hello.hpp"
 
 
-// DLLAPI void __stdcall printHello()
-// {
-//     cout << "hello world!" << endl;
-// }
+void printHello()
+{
+    cout << "hello world!" << endl;
+}

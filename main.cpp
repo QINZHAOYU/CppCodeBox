@@ -10,7 +10,6 @@
 *   To init model.
 *
 ** ******************************************************************************/
-#define DLLEXPORT 
 
 #include "common/CommHeader.hpp"
 // #include "modules/optional.hpp"

@@ -2,8 +2,9 @@
 
 
 // define dll export macro.
+#define DLLEXPORT 
 #ifdef DLLEXPORT
-#define DLLAPI __declspec(dllexport) _cdel
+#define DLLAPI __declspec(dllexport) 
 #else
 #define DLLAPI 
 #endif
