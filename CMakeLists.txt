@@ -1,6 +1,7 @@
 # 设置cmake版本要求。
 cmake_minimum_required(VERSION 3.10)
 set(ProjectName cppkits)
+message(STATUS "---------- project build started.")
 
 # 设置项目名称及c++版本要求。
 project(${ProjectName})
@@ -16,6 +17,12 @@ set(CMAKE_INSTALL_PREFIX  ${PROJECT_SOURCE_DIR})
 # link_directories(${Poco_LIBRARY_DIRS})
 # add_definitions(${Poco_DEFINITIONS})
 
+# 选择是否生成动态库。
+option(GEN_DLL "generate dll" ON)
+if (GEN_DLL)
+    add_definitions(-D DLLEXPORT)
+endif()
+
 # 添加内部库。
 add_subdirectory(modules)
 list(APPEND EXTRA_LIBS MyCppkits) 
@@ -24,9 +31,6 @@ list(APPEND EXTRA_LIBS MyCppkits)
 file(GLOB driver "main.cpp")
 file(GLOB src_inc ${PROJECT_SOURCE_DIR}/common/*.hpp) 
 file(GLOB src_cpp ${PROJECT_SOURCE_DIR}/common/*.cpp) 
-
-# 选择是否生成动态库。
-option(GEN_DLL "generate dll" ON)
 
 # 生成可执行文件。
 add_executable(${ProjectName} ${driver} ${src_inc} ${src_cpp})

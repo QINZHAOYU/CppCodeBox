@@ -9,7 +9,11 @@ add_library(${LibName}  STATIC  ${lib_src_cpp}  ${lib_src_inc})
 
 # 生成动态库。
 if (${GEN_DLL})
+    message(STATUS "---------- dll generation option: ${GEN_DLL}")
     add_library(${LibName}_dll SHARED ${lib_src_cpp} ${lib_src_inc})
+    target_include_directories(${LibName}_dll 
+    PUBLIC  "${PROJECT_SOURCE_DIR}"
+    )
 
     # 设置动态库版本号及输出名。
     set_target_properties(${LibName}_dll PROPERTIES 
@@ -18,14 +22,11 @@ if (${GEN_DLL})
     )
     set_target_properties(${LibName}_dll PROPERTIES 
         OUTPUT_NAME ${LibName}
-    )
+    )    
 endif()
 
 # 添加搜索路径。
 target_include_directories(${LibName} 
-    PUBLIC  "${PROJECT_SOURCE_DIR}"
-)
-target_include_directories(${LibName}_dll 
     PUBLIC  "${PROJECT_SOURCE_DIR}"
 )
 
