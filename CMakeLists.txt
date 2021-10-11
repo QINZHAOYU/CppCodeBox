@@ -1,7 +1,16 @@
 # 设置cmake版本要求。
 cmake_minimum_required(VERSION 3.10)
 set(ProjectName cppkits)
-message(STATUS "---------- project build started.")
+message(STATUS "---------- ${ProjectName} build started.")
+
+# 设置平台类型。
+if (CMAKE_HOST_WIN32)
+    set(WINDOWS 1)
+elseif (CMAKE_HOST_APPLE)
+    set(MACOS 1)
+elseif (CMAKE_HOST_UNIX)
+    set(LINUX 1)
+endif ()
 
 # 设置项目名称及c++版本要求。
 project(${ProjectName})
@@ -12,10 +21,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_INSTALL_PREFIX  ${PROJECT_SOURCE_DIR})
 
 # 添加外部库。
-# find_package(Poco 6.3 REQUIRED)
-# include_directories(${Poco_INCLUDE_DIRS})
-# link_directories(${Poco_LIBRARY_DIRS})
-# add_definitions(${Poco_DEFINITIONS})
+# set(MYCPPKITS_PATH $ENV{CPP_LIBS}/Test/)
+# link_directories(${MYCPPKITS_PATH})
 
 # 选择是否生成动态库。
 option(GEN_DLL "generate dll" ON)
@@ -34,7 +41,9 @@ file(GLOB src_cpp ${PROJECT_SOURCE_DIR}/common/*.cpp ${PROJECT_SOURCE_DIR}/commo
 
 # 生成可执行文件。
 add_executable(${ProjectName} ${driver} ${src_inc} ${src_cpp})
-target_link_libraries(${ProjectName} PUBLIC ${EXTRA_LIBS})
+target_link_libraries(${ProjectName} 
+    PUBLIC ${EXTRA_LIBS}
+)
 
 # 为项目添加附加包含目录。
 target_include_directories(${ProjectName} 

@@ -21,9 +21,9 @@ int main(int argc, char* argv[])
 
         cout << "------------- started." << endl;
 
-    typedef void(*Func)(void);
+        typedef void(*Func)(void);
 #ifdef WINDOWS
-    HINSTANCE dll = LoadLibraryA("tools/test/MyCppkits.dll");
+    HINSTANCE dll = LoadLibraryA("test.dll");
     if (dll)
     {
         Func myFunc = (Func) GetProcAddress(dll, "printHello");
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        cout << "dll not laoded." << endl;
+        cout << "dll not loaded." << endl;
     }
 #elif LINUX
     dlerror();
