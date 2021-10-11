@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
         cout << "------------- started." << endl;
 
         typedef void(*Func)(void);
-#ifdef WINDOWS
+#if defined(WINDOWS)
     HINSTANCE dll = LoadLibraryA("test.dll");
     if (dll)
     {
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     {
         cout << "dll not loaded." << endl;
     }
-#elif LINUX
+#elif defined(LINUX)
     dlerror();
 
     void *dll = dlopen("tools/test.so",RTLD_LAZY);

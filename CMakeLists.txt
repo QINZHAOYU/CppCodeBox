@@ -10,7 +10,9 @@ elseif (CMAKE_HOST_APPLE)
     set(MACOS 1)
 elseif (CMAKE_HOST_UNIX)
     set(LINUX 1)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl")
 endif ()
+
 
 # 设置项目名称及c++版本要求。
 project(${ProjectName} VERSION 0.2.3)

@@ -3,16 +3,16 @@
 
 // define WINDOWS.
 #undef WINDOWS
-#ifdef _WIN32
+#if defined(_WIN32) 
     #define WINDOWS
-#elif __WIN32__
+#elif defined(__WIN32__) 
     #define WINDOWS
 #endif
 
 
 // define LINUX.
 #undef LINUX
-#ifdef __linux__
+#if defined(__linux__) 
     #define LINUX
 #endif
 
@@ -32,9 +32,9 @@
 
 
 // include common headers.
-#ifdef WINDOWS
+#if defined(WINDOWS) 
     #include <windows.h>
-#elif LINUX
+#elif defined(LINUX)
     #include <dlfcn.h>
 #endif
 
