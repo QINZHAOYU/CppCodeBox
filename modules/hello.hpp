@@ -2,6 +2,6 @@
 #include "common/CommHeader.hpp"
 
 
-extern "C" DLLAPI void __stdcall printHello();
+DLLAPI void __stdcall printHello();
 
 

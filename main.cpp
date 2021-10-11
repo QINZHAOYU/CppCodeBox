@@ -12,15 +12,61 @@
 ** ******************************************************************************/
 
 #include "common/CommHeader.hpp"
-// #include "modules/optional.hpp"
-// #include "modules/lazy.hpp"
-// #include "modules/hello.hpp"
 
 
 int main(int argc, char* argv[])
-{
+{    
     try
     {
+
+        cout << "------------- started." << endl;
+
+    typedef void(*Func)(void);
+#ifdef WINDOWS
+    HINSTANCE dll = LoadLibraryA("tools/test/MyCppkits.dll");
+    if (dll)
+    {
+        Func myFunc = (Func) GetProcAddress(dll, "printHello");
+        if (myFunc) 
+        {
+            myFunc();
+        }
+        else
+        {
+            cout << "function not found." << endl;
+        }
+        FreeLibrary(dll);
+    }
+    else
+    {
+        cout << "dll not laoded." << endl;
+    }
+#elif LINUX
+    dlerror();
+
+    void *dll = dlopen("tools/test.so",RTLD_LAZY);
+    if (!dll)
+    {
+        cout << "so not loaded." << endl;
+    }
+
+    Func myFunc = (Func) dlsym(dll,"printHello");
+
+    const char *msg = dlerror();
+    if(msg)
+    {
+        cout << "function not found." << endl << msg << endl;
+        dlclose(dll);
+    }
+    else
+    {
+        myFunc();
+    }	
+ 
+    dlclose(dll);
+#endif
+    
+    cout << "------------- end." << endl;
 
     }
     catch(...)

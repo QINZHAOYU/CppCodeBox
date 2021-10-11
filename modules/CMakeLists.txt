@@ -1,8 +1,8 @@
 set(LibName MyCppkits)
 
 # 加载库文件。
-file(GLOB_RECURSE lib_src_cpp ${PROJECT_SOURCE_DIR}/modules/*.cpp)
-file(GLOB_RECURSE lib_src_inc ${PROJECT_SOURCE_DIR}/modules/*.hpp)
+file(GLOB_RECURSE lib_src_cpp ${PROJECT_SOURCE_DIR}/modules/*.cpp ${PROJECT_SOURCE_DIR}/modules/*.c)
+file(GLOB_RECURSE lib_src_inc ${PROJECT_SOURCE_DIR}/modules/*.hpp ${PROJECT_SOURCE_DIR}/modules/*.h)
 
 # 生成静态库
 add_library(${LibName}  STATIC  ${lib_src_cpp}  ${lib_src_inc})
@@ -37,7 +37,10 @@ if (${GEN_DLL})
     )
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/common ${PROJECT_SOURCE_DIR}/modules 
         DESTINATION dists/inc
-        FILES_MATCHING PATTERN  "*.hpp"
+        FILES_MATCHING 
+        PATTERN  "*.hpp"
+        PATTERN  "*.h"
         PATTERN ".cpp" EXCLUDE
+        PATTERN ".c"   EXCLUDE
     )   
 endif()

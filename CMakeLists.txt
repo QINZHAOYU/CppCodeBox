@@ -29,8 +29,8 @@ list(APPEND EXTRA_LIBS MyCppkits)
 
 # 加载项目文件。
 file(GLOB driver "main.cpp")
-file(GLOB src_inc ${PROJECT_SOURCE_DIR}/common/*.hpp) 
-file(GLOB src_cpp ${PROJECT_SOURCE_DIR}/common/*.cpp) 
+file(GLOB src_inc ${PROJECT_SOURCE_DIR}/common/*.hpp ${PROJECT_SOURCE_DIR}/common/*.h) 
+file(GLOB src_cpp ${PROJECT_SOURCE_DIR}/common/*.cpp ${PROJECT_SOURCE_DIR}/common/*.c) 
 
 # 生成可执行文件。
 add_executable(${ProjectName} ${driver} ${src_inc} ${src_cpp})

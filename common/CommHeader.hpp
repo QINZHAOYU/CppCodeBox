@@ -1,15 +1,43 @@
 #pragma once
 
 
+// define WINDOWS.
+#undef WINDOWS
+#ifdef _WIN32
+    #define WINDOWS
+#elif __WIN32__
+    #define WINDOWS
+#endif
+
+
+// define LINUX.
+#undef LINUX
+#ifdef __linux__
+    #define LINUX
+#endif
+
+
 // define dll export macro.
-#ifdef DLLEXPORT
-#define DLLAPI __declspec(dllexport) 
+#ifdef __cplusplus
+    #define EXTERNC extern "C"
 #else
-#define DLLAPI 
+    #define EXTERNC 
+#endif 
+
+#ifdef DLLEXPORT
+    #define DLLAPI EXTERNC __declspec(dllexport) 
+#else
+    #define DLLAPI EXTERNC
 #endif
 
 
 // include common headers.
+#ifdef WINDOWS
+    #include <windows.h>
+#elif LINUX
+    #include <dlfcn.h>
+#endif
+
 #include <vector>
 #include <array>
 #include <string>
