@@ -1,16 +1,17 @@
-set(LibName MyCppkits)
+set(LibName MyCppKits)
 
 # 加载库文件。
 file(GLOB_RECURSE lib_src_cpp ${PROJECT_SOURCE_DIR}/modules/*.cpp ${PROJECT_SOURCE_DIR}/modules/*.c)
 file(GLOB_RECURSE lib_src_inc ${PROJECT_SOURCE_DIR}/modules/*.hpp ${PROJECT_SOURCE_DIR}/modules/*.h)
 
-# 生成静态库
+# 生成静态库。
 add_library(${LibName}  STATIC  ${lib_src_cpp}  ${lib_src_inc})
 
-# 生成动态库。
+# 生成动态链接动态库。
 if (${GEN_DLL})
     message(STATUS "---------- dll generation option: ${GEN_DLL}")
-    add_library(${LibName}_dll SHARED ${lib_src_cpp} ${lib_src_inc})
+    
+    add_library(${LibName}_dll SHARED ${lib_src_cpp} ${lib_src_inc} ${VERSIONINFO_RC})
     target_include_directories(${LibName}_dll 
     PUBLIC  "${PROJECT_SOURCE_DIR}"
     )
@@ -40,7 +41,8 @@ if (${GEN_DLL})
         FILES_MATCHING 
         PATTERN  "*.hpp"
         PATTERN  "*.h"
-        PATTERN ".cpp" EXCLUDE
-        PATTERN ".c"   EXCLUDE
-    )   
+        PATTERN  ".cpp" EXCLUDE
+        PATTERN  ".c"   EXCLUDE
+        PATTERN  "rc"   EXCLUDE
+    )  
 endif()
