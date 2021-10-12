@@ -1,0 +1,5 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/@LibName@Targets.cmake")
+get_target_property(@LibName@_LIBRARY @LibName@ LOCATION)
+set_and_check(@LibName@_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")

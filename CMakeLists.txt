@@ -12,7 +12,6 @@ elseif (CMAKE_HOST_UNIX)
     set(LINUX 1)
 endif ()
 
-
 # 设置项目名称及c++版本要求。
 project(${ProjectName} VERSION 0.2.3)
 set(CMAKE_CXX_STANDARD 11)
@@ -20,10 +19,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # 设置安装路径。
 set(CMAKE_INSTALL_PREFIX  ${PROJECT_SOURCE_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 
 # 添加外部库。
-# set(MYCPPKITS_PATH $ENV{CPP_LIBS}/Test/)
-# find_package(MyCppKits REQUIRED)
+set(CMAKE_MODULE_PATH $ENV{CPP_LIBS}/Test/)
+find_package(MyCppKits REQUIRED)
 
 # 生成版本信息。
 if(MSVC)
@@ -60,5 +62,9 @@ target_include_directories(${ProjectName}
 )
 
 # 安装可执行程序。
-install(TARGETS  ${PROJECT_NAME}  DESTINATION  dists)
-
+install(TARGETS  ${PROJECT_NAME}  
+    DESTINATION  dists
+)
+install(FILES "${PROJECT_SOURCE_DIR}/License.txt"
+    DESTINATION  dists
+)
