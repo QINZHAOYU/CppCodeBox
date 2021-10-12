@@ -9,7 +9,7 @@ add_library(${LibName}  STATIC  ${lib_src_cpp}  ${lib_src_inc})
 
 # 生成动态链接动态库。
 if (${GEN_DLL})
-    message(STATUS "---------- dll generation option: ${GEN_DLL}")
+    message(STATUS "---------- ${LibName} dll/so generation started.")
     
     add_library(${LibName}_dll SHARED ${lib_src_cpp} ${lib_src_inc} ${VERSIONINFO_RC})
     target_include_directories(${LibName}_dll 

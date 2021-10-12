@@ -10,7 +10,6 @@ elseif (CMAKE_HOST_APPLE)
     set(MACOS 1)
 elseif (CMAKE_HOST_UNIX)
     set(LINUX 1)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl")
 endif ()
 
 
@@ -35,6 +34,7 @@ endif()
 
 # 选择是否生成动态库。
 option(GEN_DLL "generate dll" ON)
+message(STATUS "---------- if generate dll/so: ${GEN_DLL}")
 if (GEN_DLL)
     add_definitions(-D DLLEXPORT)
 endif()
