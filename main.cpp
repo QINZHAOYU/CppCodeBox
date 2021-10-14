@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 
         typedef void(*Func)(void);
 #if defined(WINDOWS)
-    HINSTANCE dll = LoadLibraryA("test.dll");
+    HINSTANCE dll = LoadLibraryA("../bin/MyCppKits.dll");
     if (dll)
     {
         Func myFunc = (Func) GetProcAddress(dll, "printHello");

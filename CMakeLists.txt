@@ -24,14 +24,15 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 
 # 添加外部库。
-set(CMAKE_MODULE_PATH $ENV{CPP_LIBS}/Test/)
-find_package(MyCppKits REQUIRED)
+# set(CMAKE_MODULE_PATH $ENV{CPP_LIBS}/Test/)
+# find_package(MyCppKits REQUIRED)
 
 # 生成版本信息。
 if(MSVC)
     set(VERSIONINFO_RC "${PROJECT_BINARY_DIR}/VersionInfo.rc")
     configure_file("${PROJECT_SOURCE_DIR}/modules/rc/VersionInfo.rc.in"
-                   "${VERSIONINFO_RC}")
+                   "${VERSIONINFO_RC}"
+    )
 endif()
 
 # 选择是否生成动态库。
