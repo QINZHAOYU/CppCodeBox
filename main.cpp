@@ -1,62 +1,73 @@
-#include "CommHeaders.hpp"
-#include "modules/optional.hpp"
-#include "modules/lazy.hpp"
+/** *****************************************************************************
+*   @copyright :  Copyright (C) 2021 Qin ZhaoYu. All rights reserved.
+*
+*   @author    :  Qin ZhaoYu.
+*   @brief     :  To collect useful toolkits and modules; to test new technique.
+*
+*   Change History:
+*   -----------------------------------------------------------------------------
+*   --version-1.0, 2021/10/09, Qin ZhaoYu,
+*   To init model.
+*
+** ******************************************************************************/
 
-
-struct BigObject
-{
-    BigObject()
-    {
-        cout << "lazy load big object" << endl;
-    }
-};
-
-
-struct MyStruct
-{
-    MyStruct()
-    {
-        _obj = lazy([]{return make_shared<BigObject>();});
-    }
-
-    void load()
-    {
-        _obj.value();
-    }
-
-    Lazy<shared_ptr<BigObject>> _obj;
-};
-
-
-int Foo(int x)
-{
-    return x*2;
-}
+#include "common/CommHeader.hpp"
 
 
 int main(int argc, char* argv[])
-{
+{    
     try
     {
-        
-    int y = 4;
-    auto lazyer1 = lazy(Foo, y);
-    cout << lazyer1.value() << endl;
 
-    Lazy<int> lazyer2 = lazy([]{return 12;});
-    cout << lazyer2.value() << endl;
+        cout << "------------- started." << endl;
 
-    function<int(int)> f = [](int x) {return x+3;};
-    auto lazyer3 = lazy(f, 3);
-    cout << lazyer3.value() << endl;
-
-    MyStruct t;
-    t.load();
-
-    }
-    catch(logic_error& exp)
+        typedef void(*Func)(void);
+#if defined(WINDOWS)
+    HINSTANCE dll = LoadLibraryA("../bin/MyCppKits.dll");
+    if (dll)
     {
-        cout << exp.what() << endl;
+        Func myFunc = (Func) GetProcAddress(dll, "printHello");
+        if (myFunc) 
+        {
+            myFunc();
+        }
+        else
+        {
+            cout << "function not found." << endl;
+        }
+        FreeLibrary(dll);
+    }
+    else
+    {
+        cout << "dll not loaded." << endl;
+    }
+#elif defined(LINUX)
+    dlerror();
+
+    void *dll = dlopen("tools/test.so",RTLD_LAZY);
+    if (!dll)
+    {
+        cout << "so not loaded." << endl;
+    }
+
+    Func myFunc = (Func) dlsym(dll,"printHello");
+
+    const char *msg = dlerror();
+    if(msg)
+    {
+        cout << "function not found." << endl << msg << endl;
+        dlclose(dll);
+    }
+    else
+    {
+        myFunc();
+    }	
+ 
+    dlclose(dll);
+#endif
+    
+    cout << "------------- end." << endl;
+
     }
     catch(...)
     {
