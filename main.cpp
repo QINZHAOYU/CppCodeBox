@@ -12,6 +12,8 @@
 ** ******************************************************************************/
 
 #include "common/CommHeader.hpp"
+#include "modules/hello.hpp"
+// #include "mylibs/inc/test.hpp"
 
 
 int main(int argc, char* argv[])
@@ -23,8 +25,10 @@ int main(int argc, char* argv[])
 
         typedef void(*Func)(void);
 
-        
+        printHello();
 #if defined(WINDOWS)
+    // printHello2(); // static lib api.
+
     string dllPath = "./bin/MyCppKits.dll";
     if (argc > 1)
     {
@@ -49,6 +53,8 @@ int main(int argc, char* argv[])
         cout << "dll not loaded." << endl;
     }
 #elif defined(LINUX)
+    // printHello2(); // static lib api.
+
     string dllPath = "./bin/MyCppKits.so";
     if (argc > 1)
     {

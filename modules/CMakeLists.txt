@@ -8,20 +8,6 @@ file(GLOB_RECURSE lib_src_inc ${PROJECT_SOURCE_DIR}/modules/*.hpp ${PROJECT_SOUR
 add_library(${LibName}  STATIC  ${lib_src_cpp}  ${lib_src_inc})
 set_target_properties(${LibName} PROPERTIES PREFIX "")
 
-# 设置静态库cmake索引文件安装路径。
-# target_include_directories(${LibName} INTERFACE
-#     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-#     $<INSTALL_INTERFACE:${PROJECT_SOURCE_DIR}/dists>
-#     )    
-# set(CONFIG_FILE_PATH ${PROJECT_SOURCE_DIR}/dists/lib/cmake)
-
-# 生成静态库的cmake索引文件。
-# include(CMakePackageConfigHelpers)    
-# configure_package_config_file(${PROJECT_SOURCE_DIR}/modules/rc/${LibName}Config.cmake.in
-#     ${CMAKE_BINARY_DIR}/${LibName}Config.cmake
-#     INSTALL_DESTINATION ${CONFIG_FILE_PATH}
-#     )
-
 # 生成动态链接动态库。
 if (${GEN_DLL})
     message(STATUS "----------------------- ${LibName} library generation started.")
@@ -56,10 +42,6 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/common ${PROJECT_SOURCE_DIR}/modules
     PATTERN  ".c"   EXCLUDE
     PATTERN  "rc"   EXCLUDE
 )
-# install(FILES
-#     ${CMAKE_BINARY_DIR}/${LibName}Config.cmake
-#     DESTINATION ${CONFIG_FILE_PATH}
-#     )
 if (${GEN_DLL}) 
     install(TARGETS ${LibName}_dll 
         RUNTIME DESTINATION dists/bin

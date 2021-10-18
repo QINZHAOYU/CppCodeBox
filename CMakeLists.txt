@@ -16,6 +16,7 @@ project(${ProjectName} VERSION 21.10.0)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+
 message(STATUS "-----------------------------------------------------------------")
 message(STATUS "------------------------ ${ProjectName} ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} ------------------------")
 message(STATUS "-----------------------------------------------------------------")
@@ -23,15 +24,6 @@ message(STATUS "----------------------------------------------------------------
 
 # 设置安装路径。
 set(CMAKE_INSTALL_PREFIX  ${PROJECT_SOURCE_DIR})
-
-# 添加外部库。
-# set(CMAKE_MODULE_PATH $ENV{CPPLIBS}/mylibs/)
-# find_package(MyCppKits)
-# if (MyCppKits_FOUND)
-#     message(STATUS "----------------------- MyCppKits found.")
-# else ()
-#     message(STATUS "----------------------- MyCppKits not found.")
-# endif ()
 
 # 生成版本信息。
 if(MSVC)
@@ -52,6 +44,13 @@ endif()
 add_subdirectory(modules)
 list(APPEND EXTRA_LIBS ${LibName}) 
 
+# 添加外部库。
+include_directories(F:\\cxxlibs\\)
+find_library(MY_LIBS   NAMES test
+    PATHS F:\\cxxlibs\\mylibs\\lib
+    REQUIRED
+    )
+
 # 加载项目文件。
 file(GLOB driver "main.cpp")
 file(GLOB src_inc ${PROJECT_SOURCE_DIR}/common/*.hpp ${PROJECT_SOURCE_DIR}/common/*.h) 
@@ -59,8 +58,10 @@ file(GLOB src_cpp ${PROJECT_SOURCE_DIR}/common/*.cpp ${PROJECT_SOURCE_DIR}/commo
 
 # 生成可执行文件。
 add_executable(${ProjectName} ${driver} ${src_inc} ${src_cpp} ${VERSIONINFO_RC})
+
 target_link_libraries(${ProjectName} 
     PUBLIC ${EXTRA_LIBS}
+    # PUBLIC ${MY_LIBS}
     )
 if (LINUX)
     target_link_libraries(${ProjectName}
@@ -72,12 +73,6 @@ endif ()
 target_include_directories(${ProjectName} 
     PUBLIC  "${PROJECT_SOURCE_DIR}"
     )
-
-# 加载外部库。
-# if (MyCppKits_FOUND)
-#     target_include_directories(${ProjectName}  PUBLIC  ${CURL_INCLUDE_DIR})
-#     target_link_libraries(${ProjectName} PUBLIC ${CURL_LIBRARY})
-# endif ()
 
 # 安装可执行程序。
 install(TARGETS  ${PROJECT_NAME}  
