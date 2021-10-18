@@ -2,6 +2,6 @@
 #include "common/CommHeader.hpp"
 
 
-DLLAPI void printHello2();
+DLLAPI void printHello();
 
 

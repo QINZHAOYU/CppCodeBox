@@ -1,0 +1,1 @@
+extern "C"  __declspec(dllexport) double mysqrt(double x);

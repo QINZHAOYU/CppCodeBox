@@ -25,7 +25,11 @@
 #endif 
 
 #ifdef DLLEXPORT
-    #define DLLAPI EXTERNC __declspec(dllexport) 
+    #ifdef WINDOWS
+        #define DLLAPI EXTERNC __declspec(dllexport) 
+    #elif LINUX
+        #define DLLAPI EXTERNC
+    #endif
 #else
     #define DLLAPI EXTERNC
 #endif

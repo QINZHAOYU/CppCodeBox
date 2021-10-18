@@ -42,11 +42,12 @@ endif()
 
 # 添加内部库。
 add_subdirectory(modules)
-list(APPEND EXTRA_LIBS ${LibName}) 
+list(APPEND EXTRA_LIBS MyCppKits) 
 
 # 添加外部库。
 include_directories(F:\\cxxlibs\\)
-find_library(MY_LIBS   NAMES test
+find_library(MY_LIBS   
+    NAMES MathSqrt
     PATHS F:\\cxxlibs\\mylibs\\lib
     REQUIRED
     )
@@ -58,10 +59,9 @@ file(GLOB src_cpp ${PROJECT_SOURCE_DIR}/common/*.cpp ${PROJECT_SOURCE_DIR}/commo
 
 # 生成可执行文件。
 add_executable(${ProjectName} ${driver} ${src_inc} ${src_cpp} ${VERSIONINFO_RC})
-
 target_link_libraries(${ProjectName} 
     PUBLIC ${EXTRA_LIBS}
-    # PUBLIC ${MY_LIBS}
+    PUBLIC ${MY_LIBS}
     )
 if (LINUX)
     target_link_libraries(${ProjectName}
