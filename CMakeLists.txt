@@ -45,10 +45,10 @@ add_subdirectory(modules)
 list(APPEND EXTRA_LIBS MyCppKits) 
 
 # 添加外部库。
-include_directories(F:\\cxxlibs\\)
+include_directories($ENV{CPPLIBS})
 find_library(MY_LIBS   
     NAMES MathSqrt
-    PATHS F:\\cxxlibs\\mylibs\\lib
+    PATHS $ENV{CPPLIBS}/mylibs/lib
     REQUIRED
     )
 
