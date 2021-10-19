@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
         cout << "dll not loaded." << endl;
     }
 #elif defined(LINUX)
-    cout << "my sqrt(): " << mysqrt(4) << endl
+    cout << "my sqrt(): " << mysqrt(4) << endl;
 
     string dllPath = "./bin/MyCppKits.so";
     if (argc > 1)

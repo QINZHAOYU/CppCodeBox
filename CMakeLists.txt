@@ -51,6 +51,7 @@ find_library(MY_LIBS
     PATHS $ENV{CPPLIBS}/mylibs/lib
     REQUIRED
     )
+message(STATUS "$ENV{CPPLIBS}/mylibs/lib")
 
 # 加载项目文件。
 file(GLOB driver "main.cpp")
