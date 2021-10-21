@@ -12,6 +12,8 @@
 ** ******************************************************************************/
 
 #include "common/CommHeader.hpp"
+#include "modules/hello.hpp"
+#include "mylibs/inc/MathFunctions.hpp"
 
 
 int main(int argc, char* argv[])
@@ -19,11 +21,20 @@ int main(int argc, char* argv[])
     try
     {
 
-        cout << "------------- started." << endl;
+        cout << "----------------------- started." << endl;
 
         typedef void(*Func)(void);
+
+        printHello();
 #if defined(WINDOWS)
-    HINSTANCE dll = LoadLibraryA("../bin/MyCppKits.dll");
+    cout << "my sqrt(): " << mysqrt(4) << endl;
+
+    string dllPath = "./bin/MyCppKits.dll";
+    if (argc > 1)
+    {
+        dllPath = argv[1];
+    }
+    HINSTANCE dll = LoadLibraryA(dllPath.c_str());
     if (dll)
     {
         Func myFunc = (Func) GetProcAddress(dll, "printHello");
@@ -33,7 +44,7 @@ int main(int argc, char* argv[])
         }
         else
         {
-            cout << "function not found." << endl;
+            cout << "dll function not found." << endl;
         }
         FreeLibrary(dll);
     }
@@ -42,12 +53,18 @@ int main(int argc, char* argv[])
         cout << "dll not loaded." << endl;
     }
 #elif defined(LINUX)
-    dlerror();
+    cout << "my sqrt(): " << mysqrt(4) << endl;
 
-    void *dll = dlopen("tools/test.so",RTLD_LAZY);
+    string dllPath = "./bin/MyCppKits.so";
+    if (argc > 1)
+    {
+        dllPath = argv[1];
+    }
+
+    void *dll = dlopen(dllPath.c_str(), RTLD_LAZY);
     if (!dll)
     {
-        cout << "so not loaded." << endl;
+        cout << "dll not loaded." << endl;
     }
 
     Func myFunc = (Func) dlsym(dll,"printHello");
@@ -66,12 +83,12 @@ int main(int argc, char* argv[])
     dlclose(dll);
 #endif
     
-    cout << "------------- end." << endl;
+    cout << "----------------------- end." << endl;
 
     }
     catch(...)
     {
-        cout << "err" << endl;
+        cout << "error happened." << endl;
     }
 
     return 0;

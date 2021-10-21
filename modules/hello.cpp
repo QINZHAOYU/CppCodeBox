@@ -3,5 +3,5 @@
 
 void printHello()
 {
-    cout << "hello world!" << endl;
+    cout << "local, hello world!" << endl;
 }

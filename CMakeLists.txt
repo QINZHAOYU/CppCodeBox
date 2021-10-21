@@ -1,7 +1,6 @@
 # 设置cmake版本要求。
 cmake_minimum_required(VERSION 3.10)
 set(ProjectName CppKits)
-message(STATUS "---------- ${ProjectName} build started.")
 
 # 设置平台类型。
 if (CMAKE_HOST_WIN32)
@@ -13,38 +12,50 @@ elseif (CMAKE_HOST_UNIX)
 endif ()
 
 # 设置项目名称及c++版本要求。
-project(${ProjectName} VERSION 0.2.3)
+project(${ProjectName} VERSION 21.10.0)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+
+message(STATUS "-----------------------------------------------------------------")
+message(STATUS "------------------------ ${ProjectName} ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} ------------------------")
+message(STATUS "-----------------------------------------------------------------")
+
+
 # 设置安装路径。
 set(CMAKE_INSTALL_PREFIX  ${PROJECT_SOURCE_DIR})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
-
-# 添加外部库。
-# set(CMAKE_MODULE_PATH $ENV{CPP_LIBS}/Test/)
-# find_package(MyCppKits REQUIRED)
 
 # 生成版本信息。
 if(MSVC)
     set(VERSIONINFO_RC "${PROJECT_BINARY_DIR}/VersionInfo.rc")
     configure_file("${PROJECT_SOURCE_DIR}/modules/rc/VersionInfo.rc.in"
                    "${VERSIONINFO_RC}"
-    )
+                   )
 endif()
 
 # 选择是否生成动态库。
-option(GEN_DLL "generate dll" ON)
-message(STATUS "---------- if generate dll/so: ${GEN_DLL}")
+option(GEN_DLL "If generate dynamic link library" ON)
+message(STATUS "----------------------- If generate dynamic link library: ${GEN_DLL}")
 if (GEN_DLL)
     add_definitions(-D DLLEXPORT)
 endif()
 
 # 添加内部库。
 add_subdirectory(modules)
-list(APPEND EXTRA_LIBS ${LibName}) 
+list(APPEND EXTRA_LIBS MyCppKits) 
+
+# 添加外部库。
+include_directories($ENV{CPPLIBS})
+find_library(MY_LIBS   
+    NAMES MathSqrt
+    PATHS $ENV{CPPLIBS}/mylibs/lib
+    REQUIRED
+    )
+if (MY_LIBS)
+    message(STATUS "MathSqrt found")
+else ()
+    message(FATAL "MathSqrt not found")
+endif ()
 
 # 加载项目文件。
 file(GLOB driver "main.cpp")
@@ -55,17 +66,23 @@ file(GLOB src_cpp ${PROJECT_SOURCE_DIR}/common/*.cpp ${PROJECT_SOURCE_DIR}/commo
 add_executable(${ProjectName} ${driver} ${src_inc} ${src_cpp} ${VERSIONINFO_RC})
 target_link_libraries(${ProjectName} 
     PUBLIC ${EXTRA_LIBS}
-)
+    PUBLIC ${MY_LIBS}
+    )
+if (LINUX)
+    target_link_libraries(${ProjectName}
+    PUBLIC dl
+    )
+endif ()
 
 # 为项目添加附加包含目录。
 target_include_directories(${ProjectName} 
     PUBLIC  "${PROJECT_SOURCE_DIR}"
-)
+    )
 
 # 安装可执行程序。
 install(TARGETS  ${PROJECT_NAME}  
     DESTINATION  dists
-)
+    )
 install(FILES "${PROJECT_SOURCE_DIR}/License.txt"
     DESTINATION  dists
-)
+    )
