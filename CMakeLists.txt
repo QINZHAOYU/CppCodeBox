@@ -51,7 +51,11 @@ find_library(MY_LIBS
     PATHS $ENV{CPPLIBS}/mylibs/lib
     REQUIRED
     )
-message(STATUS "$ENV{CPPLIBS}/mylibs/lib")
+if (MY_LIBS)
+    message(STATUS "MathSqrt found")
+else ()
+    message(FATAL "MathSqrt not found")
+endif ()
 
 # 加载项目文件。
 file(GLOB driver "main.cpp")
