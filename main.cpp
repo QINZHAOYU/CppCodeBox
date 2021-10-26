@@ -14,6 +14,7 @@
 #include "common/CommHeader.hpp"
 #include "modules/hello.hpp"
 #include "mylibs/inc/MathFunctions.hpp"
+#include "modules/RiverNetAutoInit.hpp"
 
 
 int main(int argc, char* argv[])
@@ -24,7 +25,6 @@ int main(int argc, char* argv[])
         cout << "----------------------- started." << endl;
 
         typedef void(*Func)(void);
-
         printHello();
 #if defined(WINDOWS)
     cout << "my sqrt(): " << mysqrt(4) << endl;
@@ -82,7 +82,13 @@ int main(int argc, char* argv[])
  
     dlclose(dll);
 #endif
+
     
+	AMGraph G;
+	putin(G);
+	Dijkstra(G);
+	putout(G);
+
     cout << "----------------------- end." << endl;
 
     }
