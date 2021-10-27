@@ -38,10 +38,9 @@ bool DirectedGraphHandler::setGraph(const Graph& graph)
         _matrix[i][i] = 0.0;
     }
     std::for_each(graph.begin(), graph.end(), [this](const auto &iter){
-        string ver1, ver2;
-        double dist;
-        std::tie(ver1, ver2, dist) = iter;
-        _matrix[_verIdToInd[ver1]][_verIdToInd[ver2]] = dist;
+        int begInd = _verIdToInd[std::get<0>(iter)];
+        int endInd = _verIdToInd[std::get<1>(iter)];
+        _matrix[begInd][endInd] = std::get<2>(iter);
     });
 
     return isGraphConnected();

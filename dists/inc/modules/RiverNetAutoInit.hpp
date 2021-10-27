@@ -29,52 +29,14 @@ public:
 
     bool setGraph(const Graph& graph);
 
-    void test_displayGraphMatrix()
-    {
-        cout << endl << std::setw(12) << "--";
-        for (int i = 0; i < _verIdToInd.size() ; ++i)
-        {
-            cout << std::setw(6) << getVertexId(i) ;
-        }
-        cout << endl;
 
-        for (int i = 0; i < _verIdToInd.size() ; ++i)
-        {
-            cout << std::setw(12) << getVertexId(i) ;
-
-            for (int j = 0; j < _verIdToInd.size(); ++j)
-            {
-                if (_matrix[i][j] > 100) 
-                {
-                    cout << std::setw(6) << "nan";
-                }
-                else
-                {
-                    cout << std::setw(6) << _matrix[i][j];
-                }
-            }
-
-            cout << endl << endl;
-        }
-    }
+    void getGraphMatrix(GraphMatrix &matrix) const;
+    void displayGraphMatrix() const;
 
 private:
     bool isGraphConnected();
-    string getVertexId(int ind)
-    {
-        auto iter = std::find_if(_verIdToInd.begin(), _verIdToInd.end(), [ind](const auto &elem){ 
-            return elem.second == ind;
-        });
+    string getVertexId(int ind) const;
 
-        if (iter != _verIdToInd.end())
-        {
-            return iter->first;
-        }
-        else
-        {
-            return "";
-        }
-    }
 
 private:
     VecDbl                 _dist;

@@ -13,7 +13,7 @@ endif ()
 
 # 设置项目名称及c++版本要求。
 project(${ProjectName} VERSION 21.10.0)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
@@ -91,7 +91,12 @@ install(FILES "${PROJECT_SOURCE_DIR}/License.txt"
 
 # 加载测试。
 enable_testing()
+if (WINDOWS)
+    set(TESTPATH ${PROJECT_BINARY_DIR}/tests/Release)
+elseif (LINUX)
+    set(TESTPATH ${PROJECT_BINARY_DIR}/tests/)
+endif ()
 add_test(  
     NAME ${TESTNAME}
-    COMMAND ${PROJECT_BINARY_DIR}/tests/Release/${TESTNAME}
+    COMMAND ${TESTPATH}/${TESTNAME}
 )
