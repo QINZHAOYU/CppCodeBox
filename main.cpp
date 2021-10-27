@@ -18,7 +18,7 @@
 
 
 int main(int argc, char* argv[])
-{    
+{
     try
     {
 
@@ -27,69 +27,69 @@ int main(int argc, char* argv[])
         typedef void(*Func)(void);
         printHello();
 #if defined(WINDOWS)
-    cout << "my sqrt(): " << mysqrt(4) << endl;
+        cout << "my sqrt(): " << mysqrt(4) << endl;
 
-    string dllPath = "./bin/MyCppKits.dll";
-    if (argc > 1)
-    {
-        dllPath = argv[1];
-    }
-    HINSTANCE dll = LoadLibraryA(dllPath.c_str());
-    if (dll)
-    {
-        Func myFunc = (Func) GetProcAddress(dll, "printHello");
-        if (myFunc) 
+        string dllPath = "./bin/MyCppKits.dll";
+        if (argc > 1)
         {
-            myFunc();
+            dllPath = argv[1];
+        }
+        HINSTANCE dll = LoadLibraryA(dllPath.c_str());
+        if (dll)
+        {
+            Func myFunc = (Func) GetProcAddress(dll, "printHello");
+            if (myFunc)
+            {
+                myFunc();
+            }
+            else
+            {
+                cout << "dll function not found." << endl;
+            }
+            FreeLibrary(dll);
         }
         else
         {
-            cout << "dll function not found." << endl;
+            cout << "dll not loaded." << endl;
         }
-        FreeLibrary(dll);
-    }
-    else
-    {
-        cout << "dll not loaded." << endl;
-    }
 #elif defined(LINUX)
-    cout << "my sqrt(): " << mysqrt(4) << endl;
+        cout << "my sqrt(): " << mysqrt(4) << endl;
 
-    string dllPath = "./bin/MyCppKits.so";
-    if (argc > 1)
-    {
-        dllPath = argv[1];
-    }
+        string dllPath = "./bin/MyCppKits.so";
+        if (argc > 1)
+        {
+            dllPath = argv[1];
+        }
 
-    void *dll = dlopen(dllPath.c_str(), RTLD_LAZY);
-    if (!dll)
-    {
-        cout << "dll not loaded." << endl;
-    }
+        void *dll = dlopen(dllPath.c_str(), RTLD_LAZY);
+        if (!dll)
+        {
+            cout << "dll not loaded." << endl;
+        }
 
-    Func myFunc = (Func) dlsym(dll,"printHello");
+        Func myFunc = (Func) dlsym(dll,"printHello");
 
-    const char *msg = dlerror();
-    if(msg)
-    {
-        cout << "function not found." << endl << msg << endl;
+        const char *msg = dlerror();
+        if(msg)
+        {
+            cout << "function not found." << endl << msg << endl;
+            dlclose(dll);
+        }
+        else
+        {
+            myFunc();
+        }
+
         dlclose(dll);
-    }
-    else
-    {
-        myFunc();
-    }	
- 
-    dlclose(dll);
 #endif
 
-    
-	AMGraph G;
-	putin(G);
-	Dijkstra(G);
-	putout(G);
 
-    cout << "----------------------- end." << endl;
+        AMGraph G;
+        putin(G);
+        Dijkstra(G);
+        putout(G);
+
+        cout << "----------------------- end." << endl;
 
     }
     catch(...)

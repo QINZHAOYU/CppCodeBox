@@ -2,7 +2,7 @@
 *   @copyright :  Copyright (C) 2021 Qin ZhaoYu. All rights reserved.
 *
 *   @author    :  Qin ZhaoYu.
-*   @brief     :  To implement class Lazy based on classOptional, which is similar 
+*   @brief     :  To implement class Lazy based on classOptional, which is similar
 *                 to Lazy<T> in .NET4.0 .
 *
 *   Change History:
@@ -21,7 +21,7 @@ template<typename T>
 class Lazy
 {
 public:
-    Lazy(){}
+    Lazy() {}
 
     template<typename Func, typename... Args>
     Lazy(Func &f, Args... args) // function and arguments have binded for using later.

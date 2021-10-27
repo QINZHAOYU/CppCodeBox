@@ -24,7 +24,7 @@ private:
     using data_t = typename std::aligned_storage<sizeof(T), alignof(T)>::type;
 
 public:
-    Optional(){}
+    Optional() {}
     Optional(const T& v)
     {
         create(v);
@@ -53,7 +53,7 @@ public:
         new (&_data) T(*((T*)(&val)));
         return *this;
     }
-    
+
     ~Optional()
     {
         destroy();
@@ -120,7 +120,7 @@ private:
         destroy();
         new (&_data) T(*((T*)(&val)));
     }
-    
+
 private:
     bool _hasInit{false};
     data_t _data;
