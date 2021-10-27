@@ -49,6 +49,7 @@ option(RUN_TEST "If run catch test" ON)
 message(STATUS "----------------------- If run catch test: ${RUN_TEST}")
 if (RUN_TEST)
     add_subdirectory(tests)
+    set(TESTNAME Catch2Test)
 endif()
 
 # 添加外部库。
@@ -88,10 +89,9 @@ install(FILES "${PROJECT_SOURCE_DIR}/License.txt"
     DESTINATION  dists
     )
 
-
-#加载测试。
+# 加载测试。
 enable_testing()
 add_test(  
-    NAME Catch2Test
-    COMMAND $<TARGET_FILE:Catch2Test> --success
+    NAME ${TESTNAME}
+    COMMAND ${PROJECT_BINARY_DIR}/tests/Release/${TESTNAME}
 )
