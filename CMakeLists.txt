@@ -44,17 +44,18 @@ endif()
 add_subdirectory(modules)
 list(APPEND EXTRA_LIBS MyCppKits) 
 
+# 选择是否执行测试。
+option(RUN_TEST "If run catch test" ON)
+message(STATUS "----------------------- If run catch test: ${RUN_TEST}")
+if (RUN_TEST)
+    add_subdirectory(tests)
+endif()
+
 # 添加外部库。
-include_directories($ENV{CPPLIBS})
-find_library(MY_LIBS   
-    NAMES MathSqrt
-    PATHS $ENV{CPPLIBS}/mylibs/lib
-    REQUIRED
-    )
-if (MY_LIBS)
-    message(STATUS "MathSqrt found")
-else ()
-    message(FATAL "MathSqrt not found")
+set(MyLibPath $ENV{CPPLIBS}/mylibs/lib)
+find_library(MY_LIBS NAMES MathSqrt  PATHS ${MyLibPath})
+if (NOT MY_LIBS)
+    message(FATAL "----------------------- MY_LIBS (MathSqrt) not found")
 endif ()
 
 # 加载项目文件。
@@ -86,3 +87,11 @@ install(TARGETS  ${PROJECT_NAME}
 install(FILES "${PROJECT_SOURCE_DIR}/License.txt"
     DESTINATION  dists
     )
+
+
+#加载测试。
+enable_testing()
+add_test(  
+    NAME Catch2Test
+    COMMAND $<TARGET_FILE:Catch2Test> --success
+)

@@ -12,8 +12,8 @@
 ** ******************************************************************************/
 
 #include "common/CommHeader.hpp"
+#include "tools/MathFunctions/MathFunctions.hpp"
 #include "modules/hello.hpp"
-#include "mylibs/inc/MathFunctions.hpp"
 #include "modules/RiverNetAutoInit.hpp"
 
 
@@ -82,27 +82,7 @@ int main(int argc, char* argv[])
 
         dlclose(dll);
 #endif
-       
-        DirectedGraphHandler::Graph graph;
-        graph.emplace_back(tuple<string, string, double>{"ver4", "ver5", 13});
-        graph.emplace_back(tuple<string, string, double>{"ver4", "ver6", 15});        
-        graph.emplace_back(tuple<string, string, double>{"ver1", "ver2", 1});
-        graph.emplace_back(tuple<string, string, double>{"ver1", "ver3", 12});
-        graph.emplace_back(tuple<string, string, double>{"ver2", "ver3", 9});
-        graph.emplace_back(tuple<string, string, double>{"ver2", "ver4", 3});
-        graph.emplace_back(tuple<string, string, double>{"ver3", "ver5", 5});
-        graph.emplace_back(tuple<string, string, double>{"ver4", "ver3", 4});
-        graph.emplace_back(tuple<string, string, double>{"ver5", "ver6", 4});
-
-
-        DirectedGraphHandler grapher;
-        grapher.setGraph(graph);
-        grapher.test_displayGraphMatrix();
-
-
-
-    
-
+ 
         cout << "----------------------- end." << endl;
 
     }

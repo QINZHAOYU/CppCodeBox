@@ -4,9 +4,9 @@
 *
 ** ******************************************************************************/
 
-# include "RiverNetAutoInit.hpp"
-# include "common/CommConsts.hpp"
-# include <set>
+#include "RiverNetAutoInit.hpp"
+#include "common/CommConsts.hpp"
+#include <set>
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -28,10 +28,10 @@ bool DirectedGraphHandler::setGraph(const Graph& graph)
         _verIdToInd.emplace(iter, ind++);
     });
 
-    // generate adjacent matrix:
-    // 1. distence between a vertex and itself is 0.0 ;
-    // 2. distence between unconnected vertices is INF;
-    // 3. distence between connected vertices is loaded.
+    // generate adjacent matrix of directed graph:
+    // 1. distance between a vertex and itself is 0.0 ;
+    // 2. distance between unconnected vertices is INF;
+    // 3. distance between connected vertices is loaded.
     _matrix = GraphMatrix(vertices.size(), VecDbl(vertices.size(), _DBL_MAX));
     for(int i = 0; i < vertices.size() ; ++i)  
     {
@@ -56,14 +56,48 @@ bool DirectedGraphHandler::isGraphConnected()
     return true;
 }
 
+void DirectedGraphHandler::getGraphMatrix(GraphMatrix &matrix) const
+{
+    matrix = _matrix;
+}
 
+void DirectedGraphHandler::displayGraphMatrix() const
+{
+        cout << endl << std::setw(12) << "--";
+        for (int i = 0; i < _verIdToInd.size() ; ++i)
+        {
+            cout << std::setw(6) << getVertexId(i) ;
+        }
+        cout << endl;
 
+        for (int i = 0; i < _verIdToInd.size() ; ++i)
+        {
+            cout << std::setw(12) << getVertexId(i) ;
 
+            for (int j = 0; j < _verIdToInd.size(); ++j)
+            {
+                if (_matrix[i][j] > 100) 
+                {
+                    cout << std::setw(6) << "nan";
+                }
+                else
+                {
+                    cout << std::setw(6) << _matrix[i][j];
+                }
+            }
 
+            cout << endl << endl;
+        }
+}
 
+string DirectedGraphHandler::getVertexId(int ind) const
+{
+    auto iter = std::find_if(_verIdToInd.begin(), _verIdToInd.end(), 
+    [ind](const auto &elem){return elem.second == ind;}
+    );
 
-
-
+    return (iter != _verIdToInd.end()) ? iter->first : "";
+}
 
 
 
