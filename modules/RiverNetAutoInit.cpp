@@ -7,13 +7,14 @@
 #include "RiverNetAutoInit.hpp"
 #include "common/CommConsts.hpp"
 #include <set>
+#include <iomanip>
 
 
 /////////////////////////////////////////////////////////////////////////////////
 // class DirectedGraphHandler.
 /////////////////////////////////////////////////////////////////////////////////
 
-bool DirectedGraphHandler::setGraph(const Graph& graph)
+bool DirectedGraphHandler::setGraph(const Graph &graph)
 {
     // collect all vertices and map it.
     std::set<string> vertices;
@@ -62,31 +63,28 @@ void DirectedGraphHandler::getGraphMatrix(GraphMatrix &matrix) const
 
 void DirectedGraphHandler::displayGraphMatrix() const
 {
-        cout << endl << std::setw(12) << "--";
-        for (int i = 0; i < _verIdToInd.size() ; ++i)
+    cout << endl << std::setw(12) << "--";
+    for (int i = 0; i < _verIdToInd.size() ; ++i)
+    {
+        cout << std::setw(6) << getVertexId(i) ;
+    }
+    cout << endl;
+    for (int i = 0; i < _verIdToInd.size() ; ++i)
+    {
+        cout << std::setw(12) << getVertexId(i) ;
+        for (int j = 0; j < _verIdToInd.size(); ++j)
         {
-            cout << std::setw(6) << getVertexId(i) ;
-        }
-        cout << endl;
-
-        for (int i = 0; i < _verIdToInd.size() ; ++i)
-        {
-            cout << std::setw(12) << getVertexId(i) ;
-
-            for (int j = 0; j < _verIdToInd.size(); ++j)
+            if (_matrix[i][j] >= _DBL_MAX - _DBL_EPSILON) 
             {
-                if (_matrix[i][j] > 100) 
-                {
-                    cout << std::setw(6) << "nan";
-                }
-                else
-                {
-                    cout << std::setw(6) << _matrix[i][j];
-                }
+                cout << std::setw(6) << "nan";
             }
-
-            cout << endl << endl;
+            else
+            {
+                cout << std::setw(6) << _matrix[i][j];
+            }
         }
+        cout << endl << endl;
+    }
 }
 
 string DirectedGraphHandler::getVertexId(int ind) const

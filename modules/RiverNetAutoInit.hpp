@@ -16,9 +16,6 @@
 #include "common/CommHeader.hpp"
 #include "common/CommStructs.hpp"
 
-// for test.
-#include <iomanip>
-
 
 /// \brief To search shortest path between two vertices in directed graph.
 class DirectedGraphHandler
@@ -27,7 +24,9 @@ public:
     using GraphMatrix = vector<vector<double>>;  // adjacent matrix of graph. 
     using Graph = vector<tuple<string, string, double>>;
 
-    bool setGraph(const Graph& graph);
+    bool setGraph(const Graph &graph);
+    bool runDijkstraAlgo(const string &begVertex, const string &endVertex);
+    bool runDijkstraAlgo(const vector<array<string, 2>> &vertices); 
 
 
     void getGraphMatrix(GraphMatrix &matrix) const;
