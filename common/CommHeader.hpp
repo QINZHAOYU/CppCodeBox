@@ -1,6 +1,9 @@
 #pragma once
 
 
+//===========================================================================
+// determine compilation platform and export library.
+//===========================================================================
 // define WINDOWS.
 #undef WINDOWS
 #if defined(_WIN32)
@@ -9,13 +12,11 @@
 #define WINDOWS
 #endif
 
-
 // define LINUX.
 #undef LINUX
 #if defined(__linux__)
 #define LINUX
 #endif
-
 
 // define dll export macro.
 #ifdef __cplusplus
@@ -23,7 +24,6 @@
 #else
 #define EXTERNC
 #endif
-
 #ifdef DLLEXPORT
 #ifdef WINDOWS
 #define DLLAPI EXTERNC __declspec(dllexport)
@@ -34,7 +34,6 @@
 #define DLLAPI EXTERNC
 #endif
 
-
 // include common headers.
 #if defined(WINDOWS)
 #include <windows.h>
@@ -42,6 +41,16 @@
 #include <dlfcn.h>
 #endif
 
+
+//===========================================================================
+// define commonly used marcos.
+//===========================================================================
+
+
+
+//===========================================================================
+// include built-in types headers and expose common objects.
+//===========================================================================
 #include <vector>
 #include <array>
 #include <string>

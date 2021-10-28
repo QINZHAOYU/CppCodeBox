@@ -3,6 +3,9 @@
 #include <limits>
 
 
+//===========================================================================
+// define commonly used constants. 
+//===========================================================================
 const int _INT_MAX           = (std::numeric_limits<int>::max)();
 const unsigned int _UINT_MAX = (std::numeric_limits<unsigned int>::max)();
 const double _DBL_MAX        = (std::numeric_limits<double>::max)();

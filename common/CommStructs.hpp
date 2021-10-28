@@ -2,6 +2,9 @@
 #include "CommHeader.hpp"
 
 
+//===========================================================================
+// define commonly used composite structures. 
+//===========================================================================
 using VecInt  = vector<int>;
 using VecDbl  = vector<double>;
 using VecStr  = vector<string>;
