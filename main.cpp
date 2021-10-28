@@ -24,11 +24,12 @@ int main(int argc, char *argv[])
 
 		cout << "----------------------- started." << endl;
 
-		typedef void(*Func)(void);
 		printHello();
-#if defined(WINDOWS)
 		cout << "my sqrt(): " << mysqrt(4) << endl;
 
+		typedef void(*Func)(void);
+        
+#if defined(WINDOWS)
 		string dllPath = "./bin/MyCppKits.dll";
 		if (argc > 1)
 		{
@@ -53,8 +54,6 @@ int main(int argc, char *argv[])
 			cout << "dll not loaded." << endl;
 		}
 #elif defined(LINUX)
-		cout << "my sqrt(): " << mysqrt(4) << endl;
-
 		string dllPath = "./bin/MyCppKits.so";
 		if (argc > 1)
 		{
