@@ -98,5 +98,5 @@ elseif (LINUX)
 endif ()
 add_test(  
     NAME ${TESTNAME}
-    COMMAND ${TESTPATH}/${TESTNAME}
+    COMMAND ${TESTPATH}/${TESTNAME} --reporter compact --success
 )
