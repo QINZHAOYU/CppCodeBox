@@ -24,26 +24,26 @@
 class DirectedGraphHandler
 {
 public:
-    using GraphMatrix = vector<vector<double>>;  // adjacent matrix of graph. 
-    using Graph = vector<tuple<string, string, double>>;
+	using GraphMatrix = vector<vector<double>>;  // adjacent matrix of graph.
+	using Graph = vector<tuple<string, string, double>>;
 
-    bool setGraph(const Graph& graph);
+	bool setGraph(const Graph &graph);
 
 
-    void getGraphMatrix(GraphMatrix &matrix) const;
-    void displayGraphMatrix() const;
-
-private:
-    bool isGraphConnected();
-    string getVertexId(int ind) const;
-
+	void getGraphMatrix(GraphMatrix &matrix) const;
+	void displayGraphMatrix() const;
 
 private:
-    VecDbl                 _dist;
-    VecBool                _book;
-    VecInt                 _path;
-    GraphMatrix            _matrix;
-    MapStrInt              _verIdToInd;
+	bool isGraphConnected();
+	string getVertexId(int ind) const;
+
+
+private:
+	VecDbl                 _dist;
+	VecBool                _book;
+	VecInt                 _path;
+	GraphMatrix            _matrix;
+	MapStrInt              _verIdToInd;
 };
 
 
