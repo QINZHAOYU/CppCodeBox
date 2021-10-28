@@ -108,7 +108,7 @@ TEST_CASE("test class DirectedGraphHandler", "[STAGE1]")
         grapher.getCurrPath(route2);
         grapher.getCurrVertices(currVers);
         CHECK(status == false);        
-        REQUIRE(currVers == scene2);
+        REQUIRE(currVers != scene3);
         REQUIRE(route2.empty() == true);
     }
 

@@ -91,6 +91,11 @@ void DirectedGraphHandler::getCurrPath(VecStr &path) const
 {
     path.clear();
 
+    if (_pathRoutes.empty())
+    {
+        return;
+    }
+
     for (const auto &ver: _pathRoutes.back())
     {
         path.emplace_back(getVerticeId(ver));
@@ -123,8 +128,8 @@ const string &endVertice)
 {
     if (!checkDijkstraAlgoValid(begVertice, endVertice))
     {
+        clearCurrStatus();        
         return false;
-        clearCurrStatus();
     }   
    
     GraphMatrix matrix = _matrix;
@@ -135,19 +140,23 @@ const string &endVertice)
 
         initDijkstraAlgoStatus();
         DijkstraAlgo();  
-
-        _pathRoutes.emplace_back(parsePath());
-        _matrix = matrix;  // recover graph matrix.
-        return true;
     }
     catch(const std::exception& e)
     {
-        std::cerr << e.what() << std::endl;
-        _matrix = matrix; 
-        clearCurrStatus();         
-
-        return false;
+        std::cerr << e.what() << endl;
     }
+
+    _matrix = matrix;  // recover graph matrix.
+    if (_path[_currEndVerticeInd] >= 0) // the shortest path found.
+    {
+        _pathRoutes.emplace_back(parsePath()); 
+        return true;
+    }
+    else
+    {
+        clearCurrStatus(); 
+        return false;
+    }   
 }
 
 bool DirectedGraphHandler::checkDijkstraAlgoValid(const string &begVertice, 
