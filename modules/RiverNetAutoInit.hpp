@@ -16,12 +16,17 @@
 #include "common/CommHeader.hpp"
 #include "common/CommStructs.hpp"
 
+
 /// \brief To search shortest path between two vertices in directed graph.
+///
+/// \attention Dijkstra algorithm has the ability to search all pathes once from
+///        source vertice to all others. Meanwhile, Dijkstra algorithm doesn't
+///        support negative edge value(weight).
 class DirectedGraphHandler
 {
 public:
-	using GraphMatrix = vector<vector<double>>; // adjacent matrix of graph.
-	using Graph = vector<tuple<string, string, double>>;
+	using GraphMatrix = vector<vector<double>>;  ///< graph adjacent matrix.
+	using Graph = vector<tuple<string, string, double>>;  ///< graph edges.
 
 	bool setGraph(const Graph &graph);
 	bool runDijkstraAlgo(const string &begVertice, const string &endVertice);
@@ -54,4 +59,36 @@ private:
 	VecInt             _path;               // previous vertice in shortest path of each vertices.
 	GraphMatrix        _matrix;             // graph matrix recoding path length.
 	MapStrInt          _verIdToInd;         // map of vertices and its index.
+};
+
+
+/// \brief To smooth data series.
+class DataSmoother
+{
+public:
+	static void linearSmoothN3(const vector<double> &orig, vector<double> &res);
+	static void linearSmoothN5(const vector<double> &orig, vector<double> &res);
+	static void linearSmoothN7(const vector<double> &orig, vector<double> &res);
+
+	static void quadraticSmoothN5(const vector<double> &orig, vector<double> &res);
+	static void quadraticSmoothN7(const vector<double> &orig, vector<double> &res);
+
+	static void cubicSmoothN5(const vector<double> &orig, vector<double> &res);
+	static void cubicSmoothN7(const vector<double> &orig, vector<double> &res);
+};
+
+
+/// \brief To generate and parse river net directed graph.
+class RiverNetGrapher
+{
+public:
+private:
+};
+
+
+/// \brief To handle river net status(water level and discharge).
+class RiverNetStatusHandler
+{
+public:
+private:
 };
