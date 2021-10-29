@@ -3,7 +3,7 @@
 #include "modules/RiverNetAutoInit.hpp"
 
 
-TEST_CASE("test class DirectedGraphHandler", "[STAGE1]")
+TEST_CASE("test class DirectedGraphHandler")
 {
 	DirectedGraphHandler::Graph graph;
 	graph.emplace_back(tuple<string, string, double> {"ver4", "ver5", 13});
@@ -60,6 +60,7 @@ TEST_CASE("test class DirectedGraphHandler", "[STAGE1]")
     array<string, 2> scene1 =  {"ver1", "ver6"}; 
     array<string, 2> scene2 =  {"ver1", "ver3"};
     array<string, 2> scene3 =  {"ver3", "ver1"};
+    array<string, 2> scene4 =  {"ver1", "ver7"};    
 
 	//===================================================================
     // ver1->ver2: -> ver1 -> ver2
@@ -75,41 +76,33 @@ TEST_CASE("test class DirectedGraphHandler", "[STAGE1]")
 
     SECTION("test runDijkstraAlgo(const string&, const string&)")
     {
-        VecStr route1, route2;
-        array<string, 2> currVers;
+        vector<VecStr> route1, route2;
 
         // run scene.
         grapher.runDijkstraAlgo(scene1[0], scene1[1]);
-        grapher.getCurrPath(route1);
-        REQUIRE(route1.size() == 6);
-        REQUIRE(route1[0] == "ver1");
-        REQUIRE(route1[1] == "ver2");        
-        REQUIRE(route1[2] == "ver4");
-        REQUIRE(route1[3] == "ver3");
-        REQUIRE(route1[4] == "ver5");        
-        REQUIRE(route1[5] == "ver6");
+        grapher.getPathes(route1);
+        REQUIRE(route1[0].size() == 6);
+        REQUIRE(route1[0][0] == "ver1");
+        REQUIRE(route1[0][1] == "ver2");        
+        REQUIRE(route1[0][2] == "ver4");
+        REQUIRE(route1[0][3] == "ver3");
+        REQUIRE(route1[0][4] == "ver5");        
+        REQUIRE(route1[0][5] == "ver6");
 
         // run same scene again.
         grapher.runDijkstraAlgo(scene1[0], scene1[1]);
-        grapher.getCurrPath(route2);
-        REQUIRE(route1 == route2);
+        grapher.getPathes(route2);
+        CHECK(route2.size() == 1);
+        REQUIRE(route2 == route1);
 
         // run another scene sequentially.
         grapher.runDijkstraAlgo(scene2[0], scene2[1]);
-        grapher.getCurrPath(route2);
-        REQUIRE(route2.size() == 4);
-        REQUIRE(route1[0] == "ver1");
-        REQUIRE(route1[1] == "ver2");        
-        REQUIRE(route1[2] == "ver4");
-        REQUIRE(route1[3] == "ver3");
-
-        // run an scene without solution in a directed grapher.
-        bool status = grapher.runDijkstraAlgo(scene3[0], scene3[1]);   
-        grapher.getCurrPath(route2);
-        grapher.getCurrVertices(currVers);
-        CHECK(status == false);        
-        REQUIRE(currVers != scene3);
-        REQUIRE(route2.empty() == true);
+        grapher.getPathes(route2);
+        REQUIRE(route2[0].size() == 4);
+        REQUIRE(route2[0][0] == "ver1");
+        REQUIRE(route2[0][1] == "ver2");        
+        REQUIRE(route2[0][2] == "ver4");
+        REQUIRE(route2[0][3] == "ver3");
     }
 
     SECTION("test runDijkstraAlgo(const vector<array<string, 2>>&)")
@@ -123,6 +116,31 @@ TEST_CASE("test class DirectedGraphHandler", "[STAGE1]")
         REQUIRE(routes[1][1] == "ver2");        
         REQUIRE(routes[1][2] == "ver4");
         REQUIRE(routes[1][3] == "ver3");
+    }
+
+    SECTION("test runDijkstraAlgo() failure scenes")
+    {
+        vector<VecStr> route1, route2, routes;
+        bool status = true;
+
+        // no path between two vertices in a directed graph.
+        status = grapher.runDijkstraAlgo(scene3[0], scene3[1]);   
+        grapher.getPathes(route2);
+        CHECK(status == false);        
+        REQUIRE(route2.empty() == true);
+
+        // search unknown vertice.
+        status = grapher.runDijkstraAlgo(scene4[0], scene4[1]);
+        grapher.getPathes(route1);
+        CHECK(status == false);        
+        REQUIRE(route1.empty() == true);
+
+        // one error scene in set of scenes would destroy all.
+        scenes.emplace_back(scene3);
+        grapher.runDijkstraAlgo(scenes);
+        grapher.getPathes(routes);
+        REQUIRE(routes.size() == 0);        
+
     }
 
     // SECTION("test displayXXX()")

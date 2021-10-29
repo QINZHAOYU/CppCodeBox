@@ -29,8 +29,6 @@ public:
 
 	void getGraphMatrix(GraphMatrix &matrix) const;
     void getPathes(vector<VecStr> &pathes) const;
-    void getCurrVertices(array<string, 2> &vertices) const;
-    void getCurrPath(VecStr &path) const;
 
 	void displayGraphMatrix() const;
     void displayPathes() const;
@@ -48,6 +46,7 @@ private:
 private:
     int                _currBegVerticeInd;  // current begin vertice index.
     int                _currEndVerticeInd;  // current end vertice index.
+    bool               _isMultiSets{false}; // if inputting many vertices once for Dijkstra.
     vector<VecInt>     _pathRoutes;         // shortest pathes consisting of vertices index.
 
 	VecDbl             _dist;               // path length from source vertice to all others.    

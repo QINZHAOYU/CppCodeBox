@@ -8,7 +8,7 @@
 #include "common/CommConsts.hpp"
 #include <set>
 #include <iomanip>
-#include <exception>
+//#include <exception>
 
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -81,27 +81,6 @@ void DirectedGraphHandler::getPathes(vector<VecStr> &pathes) const
     }
 }
 
-void DirectedGraphHandler::getCurrVertices(array<string, 2> &vertices) const
-{
-    vertices[0] = getVerticeId(_currBegVerticeInd);
-    vertices[1] = getVerticeId(_currEndVerticeInd);
-}
-
-void DirectedGraphHandler::getCurrPath(VecStr &path) const
-{
-    path.clear();
-
-    if (_pathRoutes.empty())
-    {
-        return;
-    }
-
-    for (const auto &ver: _pathRoutes.back())
-    {
-        path.emplace_back(getVerticeId(ver));
-    }
-}
-
 string DirectedGraphHandler::getVerticeId(int ind) const
 {
 	auto iter = std::find_if(_verIdToInd.begin(), _verIdToInd.end(),
@@ -112,15 +91,20 @@ string DirectedGraphHandler::getVerticeId(int ind) const
 
 bool DirectedGraphHandler::runDijkstraAlgo(const vector<array<string, 2>> &vertices)
 {
+    _isMultiSets = true;
+    bool status = true;
+
     for (const auto &vers: vertices)
     {
         if (!runDijkstraAlgo(vers[0], vers[1]))
         {
-            return false;  // return `false` once Dijkstra algorithm failed.
+            status = false;  // return `false` once Dijkstra algorithm failed.
+            break;
         }
     }
 
-    return true;
+    _isMultiSets = false;
+    return status;
 }
 
 bool DirectedGraphHandler::runDijkstraAlgo(const string &begVertice, 
@@ -141,9 +125,9 @@ const string &endVertice)
         initDijkstraAlgoStatus();
         DijkstraAlgo();  
     }
-    catch(const std::exception& e)
+    catch(...)
     {
-        std::cerr << e.what() << endl;
+        std::cerr << "Dijkstra crashed" << _LOCA;       
     }
 
     _matrix = matrix;  // recover graph matrix.
@@ -154,6 +138,9 @@ const string &endVertice)
     }
     else
     {
+        std::cerr << "no path found: " 
+                  << begVertice << " -> " << endVertice << _LOCA; 
+
         clearCurrStatus(); 
         return false;
     }   
@@ -164,14 +151,14 @@ const string &endVertice)
 {
     if (_verIdToInd.count(begVertice) < 1 || _verIdToInd.count(endVertice) < 1)
     {
-        std::cerr << "invalided vertex: " << begVertice << " , " << endVertice
-                  << __FILE__ << __LINE__ << endl;
+        std::cerr << "invalid vertices: " << begVertice << " , " << endVertice
+                  << _LOCA;
         return false;
     }
 
     if (_matrix.empty())
     {
-        std::cerr << "graph matrix is empty. " << __FILE__ << __LINE__ << endl;
+        std::cerr << "empty graph matrix" << _LOCA;
         return false;
     }
 
@@ -184,8 +171,7 @@ const string &endVertice)
 
         if (iter != row.end())
         {
-            std::cerr << "invalided graph: has negative edge value." 
-                      << __FILE__ << __LINE__ << endl;
+            std::cerr << "invalid graph: has negative edge value" << _LOCA;
             return false;            
         }
     } 
@@ -207,6 +193,11 @@ void DirectedGraphHandler::initDijkstraAlgoStatus()
         ?_path.emplace_back(_currBegVerticeInd)
         :_path.emplace_back(-1);
     });
+    
+    if (!_isMultiSets)
+    {
+        _pathRoutes.clear();
+    }
 }
 
 void DirectedGraphHandler::DijkstraAlgo()
@@ -272,7 +263,7 @@ void DirectedGraphHandler::clearCurrStatus()
     _dist.clear();
     _pathRoutes.clear();
     _currBegVerticeInd = -1;
-    _currEndVerticeInd = -1;
+    _currEndVerticeInd = -1;   
 }
 
 void DirectedGraphHandler::displayGraphMatrix() const
