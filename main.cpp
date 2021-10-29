@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 		cout << "my sqrt(): " << mysqrt(4) << endl;
 
 		typedef void(*Func)(void);
-        
+
 #if defined(WINDOWS)
 		string dllPath = "./bin/MyCppKits.dll";
 		if (argc > 1)

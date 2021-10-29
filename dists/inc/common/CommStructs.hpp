@@ -3,7 +3,7 @@
 
 
 //===========================================================================
-// define commonly used composite structures. 
+// define commonly used composite structures.
 //===========================================================================
 using VecInt  = vector<int>;
 using VecDbl  = vector<double>;

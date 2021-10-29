@@ -67,18 +67,18 @@ void DirectedGraphHandler::getGraphMatrix(GraphMatrix &matrix) const
 
 void DirectedGraphHandler::getPathes(vector<VecStr> &pathes) const
 {
-    pathes.clear();
+	pathes.clear();
 
-    for (const auto &route: _pathRoutes)
-    {
-        VecStr path;
-        for (const auto &ver: route)
-        {
-            path.emplace_back(getVerticeId(ver));
-        }
+	for (const auto &route : _pathRoutes)
+	{
+		VecStr path;
+		for (const auto &ver : route)
+		{
+			path.emplace_back(getVerticeId(ver));
+		}
 
-        pathes.emplace_back(path);
-    }
+		pathes.emplace_back(path);
+	}
 }
 
 string DirectedGraphHandler::getVerticeId(int ind) const
@@ -91,179 +91,179 @@ string DirectedGraphHandler::getVerticeId(int ind) const
 
 bool DirectedGraphHandler::runDijkstraAlgo(const vector<array<string, 2>> &vertices)
 {
-    _isMultiSets = true;
-    bool status = true;
+	_isMultiSets = true;
+	bool status = true;
 
-    for (const auto &vers: vertices)
-    {
-        if (!runDijkstraAlgo(vers[0], vers[1]))
-        {
-            status = false;  // return `false` once Dijkstra algorithm failed.
-            break;
-        }
-    }
+	for (const auto &vers : vertices)
+	{
+		if (!runDijkstraAlgo(vers[0], vers[1]))
+		{
+			status = false;  // return `false` once Dijkstra algorithm failed.
+			break;
+		}
+	}
 
-    _isMultiSets = false;
-    return status;
+	_isMultiSets = false;
+	return status;
 }
 
-bool DirectedGraphHandler::runDijkstraAlgo(const string &begVertice, 
-const string &endVertice)
+bool DirectedGraphHandler::runDijkstraAlgo(const string &begVertice,
+        const string &endVertice)
 {
-    if (!checkDijkstraAlgoValid(begVertice, endVertice))
-    {
-        clearCurrStatus();        
-        return false;
-    }   
-   
-    GraphMatrix matrix = _matrix;
-    try
-    {
-        _currBegVerticeInd = _verIdToInd[begVertice];
-        _currEndVerticeInd = _verIdToInd[endVertice]; 
+	if (!checkDijkstraAlgoValid(begVertice, endVertice))
+	{
+		clearCurrStatus();
+		return false;
+	}
 
-        initDijkstraAlgoStatus();
-        DijkstraAlgo();  
-    }
-    catch(...)
-    {
-        std::cerr << "Dijkstra crashed" << _LOCA;       
-    }
+	GraphMatrix matrix = _matrix;
+	try
+	{
+		_currBegVerticeInd = _verIdToInd[begVertice];
+		_currEndVerticeInd = _verIdToInd[endVertice];
 
-    _matrix = matrix;  // recover graph matrix.
-    if (_path[_currEndVerticeInd] >= 0) // the shortest path found.
-    {
-        _pathRoutes.emplace_back(parsePath()); 
-        return true;
-    }
-    else
-    {
-        std::cerr << "no path found: " 
-                  << begVertice << " -> " << endVertice << _LOCA; 
+		initDijkstraAlgoStatus();
+		DijkstraAlgo();
+	}
+	catch (...)
+	{
+		std::cerr << "Dijkstra crashed" << _LOCA;
+	}
 
-        clearCurrStatus(); 
-        return false;
-    }   
+	_matrix = matrix;  // recover graph matrix.
+	if (_path[_currEndVerticeInd] >= 0) // the shortest path found.
+	{
+		_pathRoutes.emplace_back(parsePath());
+		return true;
+	}
+	else
+	{
+		std::cerr << "no path found: "
+		          << begVertice << " -> " << endVertice << _LOCA;
+
+		clearCurrStatus();
+		return false;
+	}
 }
 
-bool DirectedGraphHandler::checkDijkstraAlgoValid(const string &begVertice, 
-const string &endVertice)
+bool DirectedGraphHandler::checkDijkstraAlgoValid(const string &begVertice,
+        const string &endVertice)
 {
-    if (_verIdToInd.count(begVertice) < 1 || _verIdToInd.count(endVertice) < 1)
-    {
-        std::cerr << "invalid vertices: " << begVertice << " , " << endVertice
-                  << _LOCA;
-        return false;
-    }
+	if (_verIdToInd.count(begVertice) < 1 || _verIdToInd.count(endVertice) < 1)
+	{
+		std::cerr << "invalid vertices: " << begVertice << " , " << endVertice
+		          << _LOCA;
+		return false;
+	}
 
-    if (_matrix.empty())
-    {
-        std::cerr << "empty graph matrix" << _LOCA;
-        return false;
-    }
+	if (_matrix.empty())
+	{
+		std::cerr << "empty graph matrix" << _LOCA;
+		return false;
+	}
 
-    for (const auto &row: _matrix)
-    {
-        auto iter = std::find_if(row.begin(), row.end(), [](const double val)
-        {
-            return val < 0.0;
-        });
+	for (const auto &row : _matrix)
+	{
+		auto iter = std::find_if(row.begin(), row.end(), [](const double val)
+		{
+			return val < 0.0;
+		});
 
-        if (iter != row.end())
-        {
-            std::cerr << "invalid graph: has negative edge value" << _LOCA;
-            return false;            
-        }
-    } 
+		if (iter != row.end())
+		{
+			std::cerr << "invalid graph: has negative edge value" << _LOCA;
+			return false;
+		}
+	}
 
-    return true;
+	return true;
 }
 
 void DirectedGraphHandler::initDijkstraAlgoStatus()
 {
-    _dist = _matrix[_currBegVerticeInd];
+	_dist = _matrix[_currBegVerticeInd];
 
-    _book = VecBool(_matrix.size(), false);
-    _book[_currBegVerticeInd] = true;    
+	_book = VecBool(_matrix.size(), false);
+	_book[_currBegVerticeInd] = true;
 
-    _path.clear();
-    std::for_each(_dist.begin(), _dist.end(), [this](double ds)
-    {
-        (ds < _DBL_MAX - _DBL_EPSILON)
-        ?_path.emplace_back(_currBegVerticeInd)
-        :_path.emplace_back(-1);
-    });
-    
-    if (!_isMultiSets)
-    {
-        _pathRoutes.clear();
-    }
+	_path.clear();
+	std::for_each(_dist.begin(), _dist.end(), [this](double ds)
+	{
+		(ds < _DBL_MAX - _DBL_EPSILON)
+		? _path.emplace_back(_currBegVerticeInd)
+		: _path.emplace_back(-1);
+	});
+
+	if (!_isMultiSets)
+	{
+		_pathRoutes.clear();
+	}
 }
 
 void DirectedGraphHandler::DijkstraAlgo()
 {
-    for (int i = 0; i < _matrix.size(); ++i)
-    {
-        if (i == _currBegVerticeInd)
-        {
-            continue;
-        }
+	for (int i = 0; i < _matrix.size(); ++i)
+	{
+		if (i == _currBegVerticeInd)
+		{
+			continue;
+		}
 
-        int postVerInd = _currBegVerticeInd;
-        double minDist = _DBL_MAX;
+		int postVerInd = _currBegVerticeInd;
+		double minDist = _DBL_MAX;
 
-        // find the next vertice making up the shortest path. 
-        for (int j = 0; j < _matrix.size(); ++j)
-        {
-            if (!_book[j] && minDist > _dist[j] + _DBL_EPSILON)
-            {
-                minDist = _dist[j];
-                postVerInd = j;
-            }
-        }
+		// find the next vertice making up the shortest path.
+		for (int j = 0; j < _matrix.size(); ++j)
+		{
+			if (!_book[j] && minDist > _dist[j] + _DBL_EPSILON)
+			{
+				minDist = _dist[j];
+				postVerInd = j;
+			}
+		}
 
-        // iterate over all other vertices to update distance.
-        _book[postVerInd] = true;
-        for (int j = 0; j < _matrix.size(); ++j)
-        {
-            if (!_book[j] && _dist[j] > _dist[postVerInd] + _matrix[postVerInd][j])
-            {
-                _dist[j] = _dist[postVerInd] + _matrix[postVerInd][j];
-                _path[j] = postVerInd;
-            }
-        }
+		// iterate over all other vertices to update distance.
+		_book[postVerInd] = true;
+		for (int j = 0; j < _matrix.size(); ++j)
+		{
+			if (!_book[j] && _dist[j] > _dist[postVerInd] + _matrix[postVerInd][j])
+			{
+				_dist[j] = _dist[postVerInd] + _matrix[postVerInd][j];
+				_path[j] = postVerInd;
+			}
+		}
 
-        // stop searching for end vertice done(otherwise, all pathes searched).
-        if (i == _currEndVerticeInd)
-        {
-            break;
-        }
-    }
+		// stop searching for end vertice done(otherwise, all pathes searched).
+		if (i == _currEndVerticeInd)
+		{
+			break;
+		}
+	}
 }
 
 VecInt DirectedGraphHandler::parsePath()
 {
-    VecInt route{_currEndVerticeInd};
+	VecInt route{_currEndVerticeInd};
 
-    int preVerInd = _currEndVerticeInd;
-    while(preVerInd != _currBegVerticeInd)
-    {
-        preVerInd = _path[preVerInd];        
-        route.emplace_back(preVerInd);
-    }
+	int preVerInd = _currEndVerticeInd;
+	while (preVerInd != _currBegVerticeInd)
+	{
+		preVerInd = _path[preVerInd];
+		route.emplace_back(preVerInd);
+	}
 
-    std::reverse(route.begin(), route.end());
-    return route; 
+	std::reverse(route.begin(), route.end());
+	return route;
 }
 
 void DirectedGraphHandler::clearCurrStatus()
 {
-    _path.clear();
-    _book.clear();
-    _dist.clear();
-    _pathRoutes.clear();
-    _currBegVerticeInd = -1;
-    _currEndVerticeInd = -1;   
+	_path.clear();
+	_book.clear();
+	_dist.clear();
+	_pathRoutes.clear();
+	_currBegVerticeInd = -1;
+	_currEndVerticeInd = -1;
 }
 
 void DirectedGraphHandler::displayGraphMatrix() const
@@ -294,15 +294,15 @@ void DirectedGraphHandler::displayGraphMatrix() const
 
 void DirectedGraphHandler::displayPathes() const
 {
-    cout << endl << endl;
-    for (const auto &route: _pathRoutes)
-    {
-        for (const auto &ver: route)
-        {
-            cout << " -> " << getVerticeId(ver) ;
-        }
-        cout << endl << endl;
-    }
+	cout << endl << endl;
+	for (const auto &route : _pathRoutes)
+	{
+		for (const auto &ver : route)
+		{
+			cout << " -> " << getVerticeId(ver) ;
+		}
+		cout << endl << endl;
+	}
 }
 
 

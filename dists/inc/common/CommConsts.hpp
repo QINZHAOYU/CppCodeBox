@@ -4,7 +4,7 @@
 
 
 //===========================================================================
-// define commonly used constants. 
+// define commonly used constants.
 //===========================================================================
 const int _INT_MAX           = (std::numeric_limits<int>::max)();
 const unsigned int _UINT_MAX = (std::numeric_limits<unsigned int>::max)();

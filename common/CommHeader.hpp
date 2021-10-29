@@ -46,7 +46,7 @@
 // define commonly used marcos.
 //===========================================================================
 #define _LOCA  string(", ") + string(__FILE__) + \
-               string("(")  + std::to_string(__LINE__) + string(")\n")
+	string("(")  + std::to_string(__LINE__) + string(")\n")
 
 
 //===========================================================================
