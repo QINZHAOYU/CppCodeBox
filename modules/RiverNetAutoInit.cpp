@@ -642,7 +642,15 @@ void DataSmoother::cubicSmoothN7(const vector<double> &orig, vector<double> &res
 
 
 
+DirectedGraphHandler* getDirectedGraphHandler()
+{
+	return new DirectedGraphHandler();
+}
 
+DataSmoother* getDataSmoother()
+{
+	return new DataSmoother();
+}
 
 
 

@@ -70,6 +70,7 @@ public:
 	static void linearSmoothN5(const vector<double> &orig, vector<double> &res);
 	static void linearSmoothN7(const vector<double> &orig, vector<double> &res);
 
+    // error.
 	static void quadraticSmoothN5(const vector<double> &orig, vector<double> &res);
 	static void quadraticSmoothN7(const vector<double> &orig, vector<double> &res);
 
@@ -92,3 +93,9 @@ class RiverNetStatusHandler
 public:
 private:
 };
+
+
+/// \brief To export class pointer.
+DLLAPI DirectedGraphHandler* getDirectedGraphHandler();
+DLLAPI DataSmoother* getDataSmoother();
+
