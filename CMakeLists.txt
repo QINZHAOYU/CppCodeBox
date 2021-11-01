@@ -44,6 +44,15 @@ endif()
 add_subdirectory(modules)
 list(APPEND EXTRA_LIBS MyCppKits) 
 
+# 添加外部库。
+set(MyLibPath $ENV{CPPLIBS}/mylibs/)
+find_library(MY_LIBS NAMES MathSqrt PATHS ${MyLibPath}/lib)
+if (NOT MY_LIBS)
+    message(FATAL "----------------------- MY_LIBS (MathSqrt) not found")
+else ()
+    list(APPEND EXTRA_INC ${MyLibPath}/inc)
+endif ()
+
 # 选择是否执行测试。
 option(RUN_TEST "If run catch test" ON)
 message(STATUS "----------------------- If run catch test: ${RUN_TEST}")
@@ -51,13 +60,6 @@ if (RUN_TEST)
     add_subdirectory(tests)
     set(TESTNAME Catch2Test)
 endif()
-
-# 添加外部库。
-set(MyLibPath $ENV{CPPLIBS}/mylibs/lib)
-find_library(MY_LIBS NAMES MathSqrt  PATHS ${MyLibPath})
-if (NOT MY_LIBS)
-    message(FATAL "----------------------- MY_LIBS (MathSqrt) not found")
-endif ()
 
 # 加载项目文件。
 file(GLOB driver "main.cpp")
@@ -79,6 +81,7 @@ endif ()
 # 为项目添加附加包含目录。
 target_include_directories(${ProjectName} 
     PUBLIC  "${PROJECT_SOURCE_DIR}"
+    PUBLIC  "${EXTRA_INC}"
     )
 
 # 安装可执行程序。
