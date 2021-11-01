@@ -1,6 +1,8 @@
 #include "tools/Catch/catch.hpp"
 #include "common/CommConsts.hpp"
 #include "modules/RiverNetAutoInit.hpp"
+#include <fstream>
+#include <regex>
 
 
 TEST_CASE("test class DirectedGraphHandler")
@@ -162,7 +164,62 @@ TEST_CASE("test class DirectedGraphHandler")
 }
 
 
+TEST_CASE("test class DataSmoother")
+{
+	VecDbl orig, res;
 
+	std::fstream origData("D:\\3_codes\\CppCodeBox\\tests\\data_RiverNetAutoInit.txt",
+	std::ios::in);
+	REQUIRE(origData.is_open() == true);
+
+    std::regex re{"[\\s,]+"};
+	string line;
+	while (std::getline(origData, line))
+	{
+		VecStr temp{std::sregex_token_iterator(line.begin(), line.end(), re, -1),
+		std::sregex_token_iterator()};
+		if (temp.size() < 3 || temp[0].find("#") != string::npos) 
+		{
+			continue;
+		}
+
+        orig.emplace_back(stod(temp[2]));
+	}
+
+    std::fstream resData("result.txt", std::ios::app);
+	REQUIRE(resData.is_open() == true);
+	auto output = [&res, &resData](const string &&item)
+	{
+		resData << item << "\t";
+		for (const auto &val: res)
+		{
+			resData << val << "\t";
+		}
+		resData << endl << endl;
+	};
+
+	DataSmoother smoother;
+	smoother.linearSmoothN3(orig, res);
+	output("ln3");
+
+	smoother.linearSmoothN5(orig, res);
+	output("ln5");
+
+	smoother.linearSmoothN7(orig, res);
+	output("ln7");
+
+    smoother.quadraticSmoothN5(orig, res);
+	output("qn5");  
+
+    smoother.quadraticSmoothN7(orig, res);
+	output("qn7"); 
+
+	smoother.cubicSmoothN5(orig, res);
+	output("cn5");
+
+	smoother.cubicSmoothN7(orig, res);
+	output("cn7");		
+}
 
 
 
