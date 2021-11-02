@@ -351,35 +351,26 @@ void DataSmoother::linearSmoothN5(const vector<double> &orig, vector<double> &re
 	}
 
 	// smooth calculation.
-	auto calc0 = [](double e0, double e1, double e2, double e3, double e4)
-	{
-		return (3.0 * e0 + 2.0 * e1 + e2 - e4) / 5.0;
-	};
-	auto calc1 = [](double e0, double e1, double e2, double e3, double e4)
-	{
-		return (4.0 * e0 + 3.0 * e1 + 2.0 * e2 + e3) / 10.0;
-	};
-	auto calc2 = [](const VecDbl && elems)
-	{
-		return std::accumulate(elems.begin(), elems.end(), 0.0) / elems.size();
-	};
+	VecDbl args0 = {3.0, 2.0, 1.0, 0.0, -1.0, 5.0};
+	VecDbl args1 = {4.0, 3.0, 2.0, 1.0, 0.0, 10.0};
+	VecDbl elems;
 
 	// left boundary element.
-	res.push_back(calc0(orig[0], orig[1], orig[2], orig[3], orig[4]));
-	res.push_back(calc1(orig[0], orig[1], orig[2], orig[3], orig[4]));
+	elems.assign(orig.begin(), orig.begin() + 5);
+	res.push_back(smoother(elems, args0));
+	res.push_back(smoother(elems, args1));
 
 	// linear smoothing by 5-points average.
 	for (int i = 2; i < size - 2; ++i)
 	{
-		double elem = calc2(VecDbl(orig.begin() + i - 2, orig.begin() + i + 2));
-		res.push_back(elem);
+		elems.assign(orig.begin() + i - 2, orig.begin() + i + 3);
+		res.push_back(smoother(elems));
 	}
 
 	// right boundary element.
-	res.push_back(calc1(orig[size - 1], orig[size - 2], orig[size - 3],
-	                    orig[size - 4], orig[size - 5]));
-	res.push_back(calc0(orig[size - 1], orig[size - 2], orig[size - 3],
-	                    orig[size - 4], orig[size - 5]));
+	elems = reverseVec(VecDbl(orig.end() - 5, orig.end()));
+	res.push_back(smoother(elems, args1));
+	res.push_back(smoother(elems, args0));
 }
 
 void DataSmoother::linearSmoothN7(const vector<double> &orig, vector<double> &res)
@@ -395,44 +386,29 @@ void DataSmoother::linearSmoothN7(const vector<double> &orig, vector<double> &re
 	}
 
 	// smooth calculation.
-	auto calc0 = [](const VecDbl && elems)
-	{
-		return (13.0 * elems[0] + 10.0 * elems[1] + 7.0 * elems[2] + 4.0 * elems[3]
-		        + elems[4] - 2.0 * elems[5] - 5.0 * elems[6]) / 28.0;
-	};
-	auto calc1 = [](const VecDbl && elems)
-	{
-		return (5.0 * elems[0] + 4.0 * elems[1] + 3.0 * elems[2] + 2.0 * elems[3]
-		        + elems[4] - elems[6]) / 14.0;
-	};
-	auto calc2 = [](const VecDbl && elems)
-	{
-		return (7.0 * elems[0] + 6.0 * elems[1] + 5.0 * elems[2] + 4.0 * elems[3]
-		        + 3.0 * elems[4] + 2.0 * elems[5] + elems[6]) / 28.0;
-	};
-	auto calc3 = [](const VecDbl && elems)
-	{
-		return std::accumulate(elems.begin(), elems.end(), 0.0) / elems.size();
-	};
+	VecDbl args0 = {13.0, 10.0, 7.0, 4.0, 1.0, -2.0, -5.0, 28.0};
+	VecDbl args1 = {5.0, 4.0, 3.0, 2.0, 1.0, 0.0, -1.0, 14.0};
+	VecDbl args2 = {7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0, 28.0};
+	VecDbl elems;
 
 	// left boundary element.
-	res.push_back(calc0(VecDbl(orig.begin(), orig.begin() + 7)));
-	res.push_back(calc1(VecDbl(orig.begin(), orig.begin() + 7)));
-	res.push_back(calc2(VecDbl(orig.begin(), orig.begin() + 7)));
+	elems.assign(orig.begin(), orig.begin() + 7);
+	res.push_back(smoother(elems, args0));
+	res.push_back(smoother(elems, args1));
+	res.push_back(smoother(elems, args2));
 
 	// linear smoothing by 7-points average.
 	for (int i = 3; i < size - 3; ++i)
 	{
-		double elem = calc3(VecDbl(orig.begin() + i - 3, orig.begin() + i + 3));
-		res.push_back(elem);
+		elems.assign(orig.begin() + i - 3, orig.begin() + i + 4);
+		res.push_back(smoother(elems));
 	}
 
 	// right boundary element.
-	VecDbl elems(orig.end() - 7, orig.end());
-	std::reverse(elems.begin(), elems.end());
-	res.push_back(calc2(move(elems)));
-	res.push_back(calc1(move(elems)));
-	res.push_back(calc0(move(elems)));
+	elems = reverseVec(VecDbl(orig.end() - 7, orig.end()));
+	res.push_back(smoother(elems, args2));
+	res.push_back(smoother(elems, args1));
+	res.push_back(smoother(elems, args0));
 }
 
 void DataSmoother::quadraticSmoothN5(const vector<double> &orig, vector<double> &res)
@@ -448,38 +424,27 @@ void DataSmoother::quadraticSmoothN5(const vector<double> &orig, vector<double> 
 	}
 
 	// smooth calculation.
-	auto calc0 = [](const VecDbl && elems)
-	{
-		return (31.0 * elems[0] + 9.0 * elems[1] - 3.0 * elems[2] - 5.0 * elems[3]
-		        + 3.0 * elems[4]) / 35.0;
-	};
-	auto calc1 = [](const VecDbl && elems)
-	{
-		return (9.0 * elems[0] + 13.0 * elems[1] + 12.0 * elems[2] + 6.0 * elems[3]
-		        - 5.0 * elems[4]) / 35.0;
-	};
-	auto calc2 = [](const VecDbl && elems)
-	{
-		return (-3.0 * elems[0] + elems[4] + 12.0 * elems[1] + elems[3]
-		        + 17.0 * elems[2]) / 35.0;
-	};
+	VecDbl args0 = {31.0, 9.0, -3.0, -5.0, 3.0, 35.0};
+	VecDbl args1 = {9.0, 13.0, 12.0, 6.0, -5.0, 35.0};
+	VecDbl args2 = {-3.0, 12.0, 17.0, 1.0, 1.0, 35.0};
+	VecDbl elems;
 
 	// left boundary element.
-	res.push_back(calc0(VecDbl(orig.begin(), orig.begin() + 5)));
-	res.push_back(calc1(VecDbl(orig.begin(), orig.begin() + 5)));
+	elems.assign(orig.begin(), orig.begin() + 5);
+	res.push_back(smoother(elems, args0));
+	res.push_back(smoother(elems, args1));
 
 	// quadratic smoothing by 5-points average.
 	for (int i = 2; i < size - 2; ++i)
 	{
-		double elem = calc2(VecDbl(orig.begin() + i - 2, orig.begin() + i + 2));
-		res.push_back(elem);
+		elems.assign(orig.begin() + i - 2, orig.begin() + i + 3);
+		res.push_back(smoother(elems, args2));
 	}
 
 	// right boundary element.
-	VecDbl elems(orig.end() - 5, orig.end());
-	std::reverse(elems.begin(), elems.end());
-	res.push_back(calc1(move(elems)));
-	res.push_back(calc0(move(elems)));
+	elems = reverseVec(VecDbl(orig.end() - 5, orig.end()));
+	res.push_back(smoother(elems, args1));
+	res.push_back(smoother(elems, args0));
 }
 
 void DataSmoother::quadraticSmoothN7(const vector<double> &orig, vector<double> &res)
@@ -495,45 +460,30 @@ void DataSmoother::quadraticSmoothN7(const vector<double> &orig, vector<double> 
 	}
 
 	// smooth calculation.
-	auto calc0 = [](const VecDbl && elems)
-	{
-		return (32.0 * elems[0] + 15.0 * elems[1] + 3.0 * elems[2] - 4.0 * elems[3]
-		        - 6.0 * elems[4] - 3.0 * elems[5] + 5.0 * elems[6] ) / 42.0;
-	};
-	auto calc1 = [](const VecDbl && elems)
-	{
-		return (5.0 * elems[0] + 4.0 * elems[1] + 3.0 * elems[2] + 2.0 * elems[3]
-		        + elems[4] - elems[6] ) / 14.0;
-	};
-	auto calc2 = [](const VecDbl && elems)
-	{
-		return (elems[0] + 3.0 * elems[1] + 4.0 * elems[2] + 4.0 * elems[3]
-		        + 3.0 * elems[4] + 1.0 * elems[5] - 2.0 * elems[6] ) / 14.0;
-	};
-	auto calc3 = [](const VecDbl && elems)
-	{
-		return (-2.0 * (elems[0] + elems[6]) + 3.0 * (elems[1] + elems[5])
-		        + 6.0 * (elems[2] + elems[4]) + 7.0 * elems[3] ) / 21.0;
-	};
+	VecDbl args0 = {32.0, 15.0, 3.0, -4.0, -6.0, -3.0, 5.0, 42.0};
+	VecDbl args1 = {5.0, 4.0, 3.0, 2.0, 1.0, 0.0, -1.0, 14.0};
+	VecDbl args2 = {1.0, 3.0, 4.0, 4.0, 3.0, 1.0, -2.0, 14.0};
+	VecDbl args3 = {-2.0, 3.0, 6.0, 7.0, 6.0, 3.0, -2.0, 21.0};
+	VecDbl elems;
 
 	// left boundary element.
-	res.push_back(calc0(VecDbl(orig.begin(), orig.begin() + 7)));
-	res.push_back(calc1(VecDbl(orig.begin(), orig.begin() + 7)));
-	res.push_back(calc2(VecDbl(orig.begin(), orig.begin() + 7)));
+	elems.assign(orig.begin(), orig.begin() + 7);
+	res.push_back(smoother(elems, args0));
+	res.push_back(smoother(elems, args1));
+	res.push_back(smoother(elems, args2));
 
 	// quadratic smoothing by 7-points average.
 	for (int i = 3; i < size - 3; ++i)
 	{
-		double elem = calc3(VecDbl(orig.begin() + i - 3, orig.begin() + i + 3));
-		res.push_back(elem);
+		elems.assign(orig.begin() + i - 3, orig.begin() + i + 4);
+		res.push_back(smoother(elems, args3));
 	}
 
 	// right boundary element.
-	VecDbl elems(orig.end() - 7, orig.end());
-	std::reverse(elems.begin(), elems.end());
-	res.push_back(calc2(move(elems)));
-	res.push_back(calc1(move(elems)));
-	res.push_back(calc0(move(elems)));
+	elems = reverseVec(VecDbl(orig.end() - 7, orig.end()));
+	res.push_back(smoother(elems, args2));
+	res.push_back(smoother(elems, args1));
+	res.push_back(smoother(elems, args0));
 }
 
 void DataSmoother::cubicSmoothN5(const vector<double> &orig, vector<double> &res)
@@ -549,38 +499,27 @@ void DataSmoother::cubicSmoothN5(const vector<double> &orig, vector<double> &res
 	}
 
 	// smooth calculation.
-	auto calc0 = [](const VecDbl && elems)
-	{
-		return (69.0 * elems[0] + 4.0 * elems[1] - 6.0 * elems[2] + 4.0 * elems[3]
-		        - elems[4]) / 70.0;
-	};
-	auto calc1 = [](const VecDbl && elems)
-	{
-		return (2.0 * elems[0] + 27.0 * elems[1] + 12.0 * elems[2] - 8.0 * elems[3]
-		        + 2.0 * elems[4]) / 35.0;
-	};
-	auto calc2 = [](const VecDbl && elems)
-	{
-		return (-3.0 * (elems[0] + elems[4]) + 12.0 * (elems[1] + elems[3])
-		        + 17.0 * elems[2] ) / 35.0;
-	};
+	VecDbl args0 = {69.0, 4.0, -6.0, 4.0, -1.0, 70.0};
+	VecDbl args1 = {2.0, 27.0, 12.0, -8.0, 2.0, 35.0};
+	VecDbl args2 = {-3.0, 12.0, 17.0, 12.0, -3.0, 35.0};
+	VecDbl elems;
 
 	// left boundary element.
-	res.push_back(calc0(VecDbl(orig.begin(), orig.begin() + 5)));
-	res.push_back(calc1(VecDbl(orig.begin(), orig.begin() + 5)));
+	elems.assign(orig.begin(), orig.begin() + 5);
+	res.push_back(smoother(elems, args0));
+	res.push_back(smoother(elems, args1));
 
 	// cubic smoothing by 5-points average.
 	for (int i = 2; i < size - 2; ++i)
 	{
-		double elem = calc2(VecDbl(orig.begin() + i - 2, orig.begin() + i + 2));
-		res.push_back(elem);
+		elems.assign(orig.begin() + i - 2, orig.begin() + i + 3);
+		res.push_back(smoother(elems, args2));
 	}
 
 	// right boundary element.
-	VecDbl elems(orig.end() - 5, orig.end());
-	std::reverse(elems.begin(), elems.end());
-	res.push_back(calc1(move(elems)));
-	res.push_back(calc0(move(elems)));
+	elems = reverseVec(VecDbl(orig.end() - 5, orig.end()));
+	res.push_back(smoother(elems, args1));
+	res.push_back(smoother(elems, args0));
 }
 
 void DataSmoother::cubicSmoothN7(const vector<double> &orig, vector<double> &res)
@@ -596,51 +535,72 @@ void DataSmoother::cubicSmoothN7(const vector<double> &orig, vector<double> &res
 	}
 
 	// smooth calculation.
-	auto calc0 = [](const VecDbl && elems)
-	{
-		return (39.0 * elems[0] + 8.0 * elems[1] - 4.0 * elems[2] - 4.0 * elems[3]
-		        + 1.0 * elems[4] + 4.0 * elems[5] - 2.0 * elems[6] ) / 42.0;
-	};
-	auto calc1 = [](const VecDbl && elems)
-	{
-		return (8.0 * elems[0] + 19.0 * elems[1] + 16.0 * elems[2] + 6.0 * elems[3]
-		        - 4.0 * elems[4] - 7.0 * elems[5] + 4.0 * elems[6] ) / 42.0;
-	};
-	auto calc2 = [](const VecDbl && elems)
-	{
-		return (-4.0 * elems[0] + 16.0 * elems[1] + 19.0 * elems[2] + 12.0 * elems[3]
-		        + 2.0 * elems[4] - 4.0 * elems[5] + 1.0 * elems[6] ) / 42.0;
-	};
-	auto calc3 = [](const VecDbl && elems)
-	{
-		return (-2.0 * (elems[0] + elems[6]) + 3.0 * (elems[1] + elems[5])
-		        + 6.0 * (elems[2] + elems[4]) + 7.0 * elems[3] ) / 21.0;
-	};
+	VecDbl args0 = {39.0, 8.0, -4.0, -4.0, 1.0, 4.0, -2.0, 42.0};
+	VecDbl args1 = {8.0, 19.0, 16.0, 6.0, -4.0, -7.0, 4.0, 42.0};
+	VecDbl args2 = {-4.0, 16.0, 19.0, 12.0, 2.0, -4.0, 1.0, 42.0};
+	VecDbl args3 = {-2.0, 3.0, 6.0, 7.0, 6.0, 3.0, -2.0, 21.0};
+	VecDbl elems;
 
 	// left boundary element.
-	res.push_back(calc0(VecDbl(orig.begin(), orig.begin() + 7)));
-	res.push_back(calc1(VecDbl(orig.begin(), orig.begin() + 7)));
-	res.push_back(calc2(VecDbl(orig.begin(), orig.begin() + 7)));
+	elems.assign(orig.begin(), orig.begin() + 7);
+	res.push_back(smoother(elems, args0));
+	res.push_back(smoother(elems, args1));
+	res.push_back(smoother(elems, args2));
 
 	// cubic smoothing by 7-points average.
 	for (int i = 3; i < size - 3; ++i)
 	{
-		double elem = calc3(VecDbl(orig.begin() + i - 3, orig.begin() + i + 3));
-		res.push_back(elem);
+		elems.assign(orig.begin() + i - 3, orig.begin() + i + 4);
+		res.push_back(smoother(elems, args3));
 	}
 
 	// right boundary element.
-	VecDbl elems(orig.end() - 7, orig.end());
+	elems = reverseVec(VecDbl(orig.end() - 7, orig.end()));
+	res.push_back(smoother(elems, args2));
+	res.push_back(smoother(elems, args1));
+	res.push_back(smoother(elems, args0));
+}
+
+double DataSmoother::smoother(const VecDbl &elems, const VecDbl &args)
+{
+	if (args.size() != elems.size() + 1)
+	{
+		std::cerr << "error: size of elems and args not match" << _LOCA;
+		return 0.0;
+	}
+
+	double res = 0.0;
+	for (int i = 0; i < elems.size(); ++i)
+	{
+		res += args[i] * elems[i];
+	}
+
+	return res / args.back();
+}
+
+double DataSmoother::smoother(const VecDbl &elems)
+{
+	if (elems.empty())
+	{
+		std::cerr << "error: smooth empty elements " << _LOCA;
+		return 0.0;
+	}
+
+	return std::accumulate(elems.begin(), elems.end(), 0.0) / elems.size();
+}
+
+VecDbl DataSmoother::reverseVec(VecDbl &&elems)
+{
 	std::reverse(elems.begin(), elems.end());
-	res.push_back(calc2(move(elems)));
-	res.push_back(calc1(move(elems)));
-	res.push_back(calc0(move(elems)));
+	return std::move(elems);
 }
 
 
 
 
-
+/////////////////////////////////////////////////////////////////////////////////
+// export classes for libraries.
+/////////////////////////////////////////////////////////////////////////////////
 
 DirectedGraphHandler *getDirectedGraphHandler()
 {
