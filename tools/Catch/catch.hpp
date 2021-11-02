@@ -1497,7 +1497,7 @@ public:
 		*m_oss << value;
 		return *this;
 	}
-	auto get() -> std::ostream & { return *m_oss; }
+	auto get() -> std::ostream& { return *m_oss; }
 };
 }
 
@@ -1636,7 +1636,7 @@ std::string convertUnknownEnumToString( E e );
 
 template<typename T>
 typename std::enable_if <
-!std::is_enum<T>::value&& !std::is_base_of<std::exception, T>::value,
+!std::is_enum<T>::value && !std::is_base_of<std::exception, T>::value,
 std::string >::type convertUnstreamable( T const & )
 {
 	return Detail::unprintableString;
@@ -2190,7 +2190,7 @@ std::string rangeToString( std::vector<bool, Allocator> const &v )
 }
 
 template<typename R>
-struct StringMaker < R, typename std::enable_if < is_range<R>::value&& !::Catch::Detail::IsStreamInsertable<R>::value >::type >
+struct StringMaker < R, typename std::enable_if < is_range<R>::value && !::Catch::Detail::IsStreamInsertable<R>::value >::type >
 {
 	static std::string convert( R const &range )
 	{
@@ -5126,7 +5126,7 @@ public:
 // TODO: Ideally this would be also constrained against the various char types,
 //       but I don't expect users to run into that in practice.
 template <typename T>
-typename std::enable_if < std::is_integral<T>::value&& !std::is_same<T, bool>::value,
+typename std::enable_if < std::is_integral<T>::value && !std::is_same<T, bool>::value,
                           GeneratorWrapper<T >>::type
 random(T a, T b)
 {
@@ -9403,7 +9403,7 @@ public:
 			: m_column(column),
 			  m_stringIndex(stringIndex) {}
 
-		auto line() const -> std::string const & { return m_column.m_strings[m_stringIndex]; }
+		auto line() const -> std::string const& { return m_column.m_strings[m_stringIndex]; }
 
 		auto isBoundary(size_t at) const -> bool
 		{
@@ -10569,7 +10569,7 @@ struct Parser : ParserBase
 
 	// Forward deprecated interface with '+' instead of '|'
 	template<typename T>
-	auto operator+=( T const &other ) -> Parser& { return operator|=( other ); }
+	auto operator+=( T const &other ) -> Parser & { return operator|=( other ); }
 	template<typename T>
 	auto operator+( T const &other ) const -> Parser { return operator|( other ); }
 
