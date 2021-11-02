@@ -3,6 +3,7 @@
 #include "modules/RiverNetAutoInit.hpp"
 #include <fstream>
 #include <regex>
+#include <numeric>
 
 
 TEST_CASE("test class DirectedGraphHandler")
@@ -166,10 +167,9 @@ TEST_CASE("test class DirectedGraphHandler")
 
 TEST_CASE("test class DataSmoother")
 {
-	VecDbl orig, res;
+	VecDbl orig, real, res;
 
-	std::fstream origData("D:\\3_codes\\CppCodeBox\\tests\\data_RiverNetAutoInit.txt",
-	std::ios::in);
+	std::fstream origData("data_RiverNetAutoInit.txt", std::ios::in);
 	REQUIRE(origData.is_open() == true);
 
     std::regex re{"[\\s,]+"};
@@ -184,10 +184,12 @@ TEST_CASE("test class DataSmoother")
 		}
 
         orig.emplace_back(stod(temp[2]));
+        real.emplace_back(stod(temp[1]));
 	}
 
     std::fstream resData("result.txt", std::ios::app);
 	REQUIRE(resData.is_open() == true);
+
 	auto output = [&res, &resData](const string &&item)
 	{
 		resData << item << "\t";
@@ -197,28 +199,54 @@ TEST_CASE("test class DataSmoother")
 		}
 		resData << endl << endl;
 	};
+    double average = std::accumulate(real.begin(), real.end(), 0.0)/real.size();
+    auto standardDevitation = [&average](const VecDbl &data)
+    {
+        double variance = 0.0;
+        for (const auto &val:data)
+        {
+            variance += std::pow(val - average, 2.0);
+        }
+
+        return std::sqrt(variance/data.size());
+    };
+    double origStandardDevitation = standardDevitation(orig);
 
 	DataSmoother smoother;
 	smoother.linearSmoothN3(orig, res);
 	output("ln3");
+    double sdLN3 = standardDevitation(res);
+    CHECK(sdLN3 <= origStandardDevitation);
 
 	smoother.linearSmoothN5(orig, res);
 	output("ln5");
+    double sdLN5 = standardDevitation(res);
+    CHECK(sdLN5 <= origStandardDevitation);
 
 	smoother.linearSmoothN7(orig, res);
 	output("ln7");
+    double sdLN7 = standardDevitation(res);
+    CHECK(sdLN7 <= origStandardDevitation);
 
     smoother.quadraticSmoothN5(orig, res);
 	output("qn5");  
+    double sdQN5 = standardDevitation(res);
+    CHECK(sdQN5 <= origStandardDevitation);
 
     smoother.quadraticSmoothN7(orig, res);
 	output("qn7"); 
+    double sdQN7 = standardDevitation(res);
+    CHECK(sdQN7 <= origStandardDevitation);
 
 	smoother.cubicSmoothN5(orig, res);
 	output("cn5");
+    double sdCN5 = standardDevitation(res);
+    CHECK(sdCN5 <= origStandardDevitation);
 
 	smoother.cubicSmoothN7(orig, res);
-	output("cn7");		
+	output("cn7");	
+    double sdCN7 = standardDevitation(res);
+    CHECK(sdCN7 <= origStandardDevitation);    	
 }
 
 
