@@ -12,85 +12,84 @@
 ** ******************************************************************************/
 
 #include "common/CommHeader.hpp"
+#include "tools/MathFunctions/MathFunctions.hpp"
 #include "modules/hello.hpp"
-#include "mylibs/inc/MathFunctions.hpp"
+#include "modules/RiverNetAutoInit.hpp"
 
 
-int main(int argc, char* argv[])
-{    
-    try
-    {
+int main(int argc, char *argv[])
+{
+	try
+	{
 
-        cout << "----------------------- started." << endl;
+		cout << "----------------------- started." << endl;
 
-        typedef void(*Func)(void);
+		printHello();
+		cout << "my sqrt(): " << mysqrt(4) << endl;
 
-        printHello();
+		typedef void(*Func)(void);
+
 #if defined(WINDOWS)
-    cout << "my sqrt(): " << mysqrt(4) << endl;
-
-    string dllPath = "./bin/MyCppKits.dll";
-    if (argc > 1)
-    {
-        dllPath = argv[1];
-    }
-    HINSTANCE dll = LoadLibraryA(dllPath.c_str());
-    if (dll)
-    {
-        Func myFunc = (Func) GetProcAddress(dll, "printHello");
-        if (myFunc) 
-        {
-            myFunc();
-        }
-        else
-        {
-            cout << "dll function not found." << endl;
-        }
-        FreeLibrary(dll);
-    }
-    else
-    {
-        cout << "dll not loaded." << endl;
-    }
+		string dllPath = "./bin/MyCppKits.dll";
+		if (argc > 1)
+		{
+			dllPath = argv[1];
+		}
+		HINSTANCE dll = LoadLibraryA(dllPath.c_str());
+		if (dll)
+		{
+			Func myFunc = (Func) GetProcAddress(dll, "printHello");
+			if (myFunc)
+			{
+				myFunc();
+			}
+			else
+			{
+				cout << "dll function not found." << endl;
+			}
+			FreeLibrary(dll);
+		}
+		else
+		{
+			cout << "dll not loaded." << endl;
+		}
 #elif defined(LINUX)
-    cout << "my sqrt(): " << mysqrt(4) << endl;
+		string dllPath = "./bin/MyCppKits.so";
+		if (argc > 1)
+		{
+			dllPath = argv[1];
+		}
 
-    string dllPath = "./bin/MyCppKits.so";
-    if (argc > 1)
-    {
-        dllPath = argv[1];
-    }
+		void *dll = dlopen(dllPath.c_str(), RTLD_LAZY);
+		if (!dll)
+		{
+			cout << "dll not loaded." << endl;
+		}
 
-    void *dll = dlopen(dllPath.c_str(), RTLD_LAZY);
-    if (!dll)
-    {
-        cout << "dll not loaded." << endl;
-    }
+		Func myFunc = (Func) dlsym(dll, "printHello");
 
-    Func myFunc = (Func) dlsym(dll,"printHello");
+		const char *msg = dlerror();
+		if (msg)
+		{
+			cout << "function not found." << endl << msg << endl;
+			dlclose(dll);
+		}
+		else
+		{
+			myFunc();
+		}
 
-    const char *msg = dlerror();
-    if(msg)
-    {
-        cout << "function not found." << endl << msg << endl;
-        dlclose(dll);
-    }
-    else
-    {
-        myFunc();
-    }	
- 
-    dlclose(dll);
+		dlclose(dll);
 #endif
-    
-    cout << "----------------------- end." << endl;
 
-    }
-    catch(...)
-    {
-        cout << "error happened." << endl;
-    }
+		cout << "----------------------- end." << endl;
 
-    return 0;
+	}
+	catch (...)
+	{
+		cout << "error happened." << endl;
+	}
+
+	return 0;
 }
 
