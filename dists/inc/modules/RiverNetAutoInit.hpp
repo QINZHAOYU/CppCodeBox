@@ -16,12 +16,17 @@
 #include "common/CommHeader.hpp"
 #include "common/CommStructs.hpp"
 
+
 /// \brief To search shortest path between two vertices in directed graph.
+///
+/// \attention Dijkstra algorithm has the ability to search all pathes once from
+///        source vertice to all others. Meanwhile, Dijkstra algorithm doesn't
+///        support negative edge value(weight).
 class DirectedGraphHandler
 {
 public:
-	using GraphMatrix = vector<vector<double>>; // adjacent matrix of graph.
-	using Graph = vector<tuple<string, string, double>>;
+	using GraphMatrix = vector<vector<double>>;  ///< graph adjacent matrix.
+	using Graph = vector<tuple<string, string, double>>;  ///< graph edges.
 
 	bool setGraph(const Graph &graph);
 	bool runDijkstraAlgo(const string &begVertice, const string &endVertice);
@@ -55,3 +60,31 @@ private:
 	GraphMatrix        _matrix;             // graph matrix recoding path length.
 	MapStrInt          _verIdToInd;         // map of vertices and its index.
 };
+
+
+/// \brief To smooth data series.
+class DataSmoother
+{
+public:
+	static void linearSmoothN3(const VecDbl &orig, VecDbl &res);
+	static void linearSmoothN5(const VecDbl &orig, VecDbl &res);
+	static void linearSmoothN7(const VecDbl &orig, VecDbl &res);
+
+	static void quadraticSmoothN5(const VecDbl &orig, VecDbl &res);
+	static void quadraticSmoothN7(const VecDbl &orig, VecDbl &res);
+
+	static void cubicSmoothN5(const VecDbl &orig, VecDbl &res);
+	static void cubicSmoothN7(const VecDbl &orig, VecDbl &res);
+
+private:
+	static double smoother(const VecDbl &elems, const VecDbl &args);
+	static double smoother(const VecDbl &elems);
+	static VecDbl reverseVec(VecDbl &&elems);
+
+};
+
+
+/// \brief To export class pointer.
+DLLAPI DirectedGraphHandler *getDirectedGraphHandler();
+DLLAPI DataSmoother *getDataSmoother();
+
