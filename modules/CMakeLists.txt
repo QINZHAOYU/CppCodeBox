@@ -10,7 +10,7 @@ set_target_properties(${LibName} PROPERTIES PREFIX "")
 
 # 生成动态链接动态库。
 if (${GEN_DLL})
-    message(STATUS "----------------------- ${LibName} library generation started.")
+    message(STATUS "${LibName} library generation started.")
     
     add_library(${LibName}_dll SHARED ${lib_src_cpp} ${lib_src_inc} ${VERSIONINFO_RC})
     target_include_directories(${LibName}_dll 

@@ -13,7 +13,7 @@ endif ()
 
 # 设置项目名称及c++版本要求。
 project(${ProjectName} VERSION 21.10.0)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 
@@ -35,7 +35,7 @@ endif()
 
 # 选择是否生成动态库。
 option(GEN_DLL "If generate dynamic link library" ON)
-message(STATUS "----------------------- If generate dynamic link library: ${GEN_DLL}")
+message(STATUS "If generate dynamic link library: ${GEN_DLL}")
 if (GEN_DLL)
     add_definitions(-D DLLEXPORT)
 endif()
@@ -45,17 +45,21 @@ add_subdirectory(modules)
 list(APPEND EXTRA_LIBS MyCppKits) 
 
 # 添加外部库。
-include_directories($ENV{CPPLIBS})
-find_library(MY_LIBS   
-    NAMES MathSqrt
-    PATHS $ENV{CPPLIBS}/mylibs/lib
-    REQUIRED
-    )
-if (MY_LIBS)
-    message(STATUS "MathSqrt found")
+set(MyLibPath $ENV{CPPLIBS}/mylibs/)
+find_library(MY_LIBS NAMES MathSqrt PATHS ${MyLibPath}/lib)
+if (NOT MY_LIBS)
+    message(FATAL "MY_LIBS (MathSqrt) not found")
 else ()
-    message(FATAL "MathSqrt not found")
+    list(APPEND EXTRA_INC ${MyLibPath}/inc)
 endif ()
+
+# 选择是否执行测试。
+option(RUN_TEST "If run catch test" ON)
+message(STATUS "If run catch test: ${RUN_TEST}")
+if (RUN_TEST)
+    add_subdirectory(tests)
+    set(TESTNAME Catch2Test)
+endif()
 
 # 加载项目文件。
 file(GLOB driver "main.cpp")
@@ -77,6 +81,7 @@ endif ()
 # 为项目添加附加包含目录。
 target_include_directories(${ProjectName} 
     PUBLIC  "${PROJECT_SOURCE_DIR}"
+    PUBLIC  "${EXTRA_INC}"
     )
 
 # 安装可执行程序。
@@ -86,3 +91,15 @@ install(TARGETS  ${PROJECT_NAME}
 install(FILES "${PROJECT_SOURCE_DIR}/License.txt"
     DESTINATION  dists
     )
+
+# 加载测试。
+enable_testing()
+if (WINDOWS)
+    set(TESTPATH ${PROJECT_BINARY_DIR}/tests/Release)
+elseif (LINUX)
+    set(TESTPATH ${PROJECT_BINARY_DIR}/tests/)
+endif ()
+add_test(  
+    NAME ${TESTNAME}
+    COMMAND ${TESTPATH}/${TESTNAME} --reporter compact --success
+)
