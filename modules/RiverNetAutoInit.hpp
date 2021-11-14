@@ -84,22 +84,6 @@ private:
 };
 
 
-/// \brief To generate and parse river net directed graph.
-class RiverNetGrapher
-{
-public:
-private:
-};
-
-
-/// \brief To handle river net status(water level and discharge).
-class RiverNetStatusHandler
-{
-public:
-private:
-};
-
-
 /// \brief To export class pointer.
 DLLAPI DirectedGraphHandler *getDirectedGraphHandler();
 DLLAPI DataSmoother *getDataSmoother();

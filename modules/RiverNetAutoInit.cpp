@@ -232,12 +232,6 @@ void DirectedGraphHandler::DijkstraAlgo()
 				_path[j] = postVerInd;
 			}
 		}
-
-		// stop searching for end vertice done(otherwise, all pathes searched).
-		if (i == _currEndVerticeInd)
-		{
-			break;
-		}
 	}
 }
 
@@ -592,10 +586,8 @@ double DataSmoother::smoother(const VecDbl &elems)
 VecDbl DataSmoother::reverseVec(VecDbl &&elems)
 {
 	std::reverse(elems.begin(), elems.end());
-	return std::move(elems);
+	return elems;
 }
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////////
