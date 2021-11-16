@@ -93,13 +93,15 @@ install(FILES "${PROJECT_SOURCE_DIR}/License.txt"
     )
 
 # 加载测试。
-enable_testing()
-if (WINDOWS)
-    set(TESTPATH ${PROJECT_BINARY_DIR}/tests/Release)
-elseif (LINUX)
-    set(TESTPATH ${PROJECT_BINARY_DIR}/tests/)
+if (RUN_TEST)
+    enable_testing()
+    if (WINDOWS)
+        set(TESTPATH ${PROJECT_BINARY_DIR}/tests/Release)
+    elseif (LINUX)
+        set(TESTPATH ${PROJECT_BINARY_DIR}/tests/)
+    endif ()
+    add_test(  
+        NAME ${TESTNAME}
+        COMMAND ${TESTPATH}/${TESTNAME} --reporter compact --success
+    )
 endif ()
-add_test(  
-    NAME ${TESTNAME}
-    COMMAND ${TESTPATH}/${TESTNAME} --reporter compact --success
-)
