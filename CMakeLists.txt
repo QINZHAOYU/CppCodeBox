@@ -35,7 +35,7 @@ endif()
 
 # 选择是否生成动态库。
 option(GEN_DLL "If generate dynamic link library" ON)
-message(STATUS "If generate dynamic link library: ${GEN_DLL}")
+message(STATUS "If generate dynamic link library(GEN_DLL): ${GEN_DLL}")
 if (GEN_DLL)
     add_definitions(-D DLLEXPORT)
 endif()
@@ -54,8 +54,8 @@ else ()
 endif ()
 
 # 选择是否执行测试。
-option(RUN_TEST "If run catch test" ON)
-message(STATUS "If run catch test: ${RUN_TEST}")
+option(RUN_TEST "If run catch test" OFF)
+message(STATUS "If run catch test(RUN_TEST): ${RUN_TEST}")
 if (RUN_TEST)
     add_subdirectory(tests)
     set(TESTNAME Catch2Test)
