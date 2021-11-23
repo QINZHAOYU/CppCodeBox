@@ -3,11 +3,11 @@
 *
 *   @author    :  Qin ZhaoYu.
 *   @see       :  https://github.com/QINZHAOYU
-*   @brief     :  To provide an automatically initialization method of river net.
+*   @brief     :  To search shortest path between two vertices in graph.
 *
 *   Change History:
 *   -----------------------------------------------------------------------------
-*   --version-1.0, 2021/10/22, Qin ZhaoYu, zhaoyu.qin@foxmail.com
+*   v1.0, 2021/11/23, Qin ZhaoYu, zhaoyu.qin@foxmail.com
 *   Init model.
 *
 ** ******************************************************************************/
@@ -16,6 +16,10 @@
 #include "common/CommHeader.hpp"
 #include "common/CommStructs.hpp"
 
+
+/// \brief namespace of cpp code box.
+namespace ccb
+{
 
 /// \brief To search shortest path between two vertices in directed graph.
 ///
@@ -61,30 +65,4 @@ private:
 	MapStrInt          _verIdToInd;         // map of vertices and its index.
 };
 
-
-/// \brief To smooth data series.
-class DataSmoother
-{
-public:
-	static void linearSmoothN3(const VecDbl &orig, VecDbl &res);
-	static void linearSmoothN5(const VecDbl &orig, VecDbl &res);
-	static void linearSmoothN7(const VecDbl &orig, VecDbl &res);
-
-	static void quadraticSmoothN5(const VecDbl &orig, VecDbl &res);
-	static void quadraticSmoothN7(const VecDbl &orig, VecDbl &res);
-
-	static void cubicSmoothN5(const VecDbl &orig, VecDbl &res);
-	static void cubicSmoothN7(const VecDbl &orig, VecDbl &res);
-
-private:
-	static double smoother(const VecDbl &elems, const VecDbl &args);
-	static double smoother(const VecDbl &elems);
-	static VecDbl reverseVec(VecDbl &&elems);
-
-};
-
-
-/// \brief To export class pointer.
-DLLAPI DirectedGraphHandler *getDirectedGraphHandler();
-DLLAPI DataSmoother *getDataSmoother();
-
+}  // end of namespace ccb.
