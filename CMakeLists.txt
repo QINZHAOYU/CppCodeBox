@@ -48,7 +48,7 @@ list(APPEND EXTRA_LIBS MyCppKits)
 set(MyLibPath $ENV{CPPLIBS}/mylibs/)
 find_library(MY_LIBS NAMES MathSqrt PATHS ${MyLibPath}/lib)
 if (NOT MY_LIBS)
-    message(FATAL "MY_LIBS (MathSqrt) not found")
+    message(FATAL "EXTERNAL_LIBS not found")
 else ()
     list(APPEND EXTRA_INC ${MyLibPath}/inc)
 endif ()
@@ -88,9 +88,9 @@ target_include_directories(${ProjectName}
 install(TARGETS  ${PROJECT_NAME}  
     DESTINATION  dists
     )
-install(FILES "${PROJECT_SOURCE_DIR}/License.txt"
-    DESTINATION  dists
-    )
+# install(FILES "${PROJECT_SOURCE_DIR}/License.txt"
+#     DESTINATION  dists
+#     )
 
 # 加载测试。
 if (RUN_TEST)

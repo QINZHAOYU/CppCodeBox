@@ -161,6 +161,28 @@ TEST_CASE("test class DirectedGraphHandler")
 	//     grapher.displayGraphMatrix();
 	//     grapher.displayPathes();
 	// }
+
+    SECTION("test isGraphConnected()")
+    {
+        bool status = true;
+        status = grapher.setGraph(graph);
+        CHECK(status == true);
+
+        // unconnected graph.
+	    DirectedGraphHandler::Graph graph2 = graph; 
+        graph2.erase(graph2.begin() + 1);  // remove {"ver4", "ver6"}.
+        graph2.erase(graph2.begin() + 7);  // remove {"ver5", "ver6"}.
+	    status = grapher.setGraph(graph2);   
+        CHECK(status == true);   
+		status = grapher.runDijkstraAlgo(scene1[0], scene1[1]);
+        CHECK(status == false);     
+                    
+        graph2.emplace_back(tuple<string, string, double> {"ver6", "ver7", 13});
+	    status = grapher.setGraph(graph2);   
+        CHECK(status == false);  
+		status = grapher.runDijkstraAlgo(scene1[0], scene1[1]);
+        CHECK(status == false); 
+    }
 }
 
 
