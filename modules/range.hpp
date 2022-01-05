@@ -133,9 +133,9 @@ Impl<T> Range(T begin, T  end)
 }
 
 template<typename T, typename U>
-auto Range(T begin, T end, U step) -> Impl < decltype(step) >
+auto Range(T begin, T end, U step) -> Impl < decltype(begin + step) >
 {
-	using r_t = Impl < decltype(step) >;
+	using r_t = Impl < decltype(begin + step) >;
 	return r_t(begin, end, step);
 }
 
