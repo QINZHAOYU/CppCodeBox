@@ -15,6 +15,7 @@
 #include "tools/MathFunctions/MathFunctions.hpp"
 #include "modules/hello.hpp"
 #include "modules/GraphSearchingAlgo.hpp"
+#include "modules/range.hpp"
 
 int main(int argc, char *argv[])
 {

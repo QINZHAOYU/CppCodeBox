@@ -15,13 +15,15 @@
 #include "common/CommHeader.hpp"
 
 
+namespace ccb
+{
 /// \brief Iterator for custom range.
 template<typename T>
-class iterator
+class Iterator
 {
 public:
 	using value_type = T;
-	using size_type = size_t;
+	using size_type  = size_t;
 
 private:
 	size_type        _cursor;
@@ -29,24 +31,43 @@ private:
 	value_type       _value;
 
 public:
-	iterator(size_type currStart, value_type begValue, value_type stepValue);
-	value_type operator*()const;
-	bool operator!=(const iterator &rhs)const;
-	iterator &operator++();
+	Iterator(size_type currStart, value_type begValue, value_type stepValue)
+		: _cursor(currStart)
+		, _step(stepValue)
+		, _value(begValue)
+	{
+		_value += (_step * _cursor);
+	}
+	value_type operator*()const
+	{
+		return _value;
+	}
+
+	bool operator!=(const Iterator &rhs)const
+	{
+		return (_cursor != rhs._cursor);
+	}
+
+	Iterator &operator++()
+	{
+		_cursor ++;
+		_value += _step;
+		return *this;
+	}
 };
 
 
 /// \brief Return object of custom range.
 template<typename T>
-class impl
+class Impl
 {
 public:
 	using value_type      = T;
+	using size_type       = size_t;
 	using reference       = const value_type&;  // don't allow changes after construction.
 	using const_reference = const value_type&;
-	using iterator        = const iterator<value_type>; // don't allow changes after construction.
-	using const_iterator  = const iterator<value_type>;
-	using size_type       = typename iterator::size_type;
+	using iterator        = const Iterator<value_type>; // don't allow changes after construction.
+	using const_iterator  = const Iterator<value_type>;
 
 private:
 	const value_type _begin;
@@ -54,36 +75,69 @@ private:
 	const value_type _step;
 	const size_type  _maxCount;
 
-	size_type getAdjustedCount() const;
+	size_type getAdjustedCount() const
+	{
+		if (_step > 0 && _begin >= _end)
+		{
+			throw std::logic_error("End value must be greater than begin value.");
+		}
+		else if (_step < 0 && _begin <= _end)
+		{
+			throw std::logic_error("End Value must be less than begin value.");
+		}
+
+		size_type x = static_cast<size_type>((_end - _begin) / _step);
+		if (_begin + (_step * x) != _end) { ++x; }
+
+		return x;
+	}
 
 public:
-	impl(value_type begValue, value_type endValue, value_type stepValue);
-	size_type size()const;
-	const_iterator begin()const;
-	const_iterator end()const;
+	Impl(value_type begValue, value_type endValue, value_type stepValue)
+		: _begin(begValue)
+		, _end(endValue)
+		, _step(stepValue)
+		, _maxCount(getAdjustedCount())
+	{}
+
+	size_type size()const
+	{
+		return _maxCount;
+	}
+
+	const_iterator begin()const
+	{
+		return {0, _begin, _step};
+	}
+
+	const_iterator end()const
+	{
+		return {_maxCount, _end, _step};
+	}
+
+
 };
 
 
 /// \brief Custom range.
 template<typename T>
-impl<T> range(T end)
+Impl<T> Range(T end)
 {
 	return {{}, end, 1};
 }
 
 template<typename T>
-impl<T> range(T begin, T  end)
+Impl<T> Range(T begin, T  end)
 {
 	return {begin, end, 1};
 }
 
 template<typename T, typename U>
-auto range(T begin, T end, U step) -> impl < decltype(begin + end) >
+auto Range(T begin, T end, U step) -> Impl < decltype(step) >
 {
-	using r_t = impl < decltype(begin + end) >;
+	using r_t = Impl < decltype(step) >;
 	return r_t(begin, end, step);
 }
 
 
-#include "range.inl"
-
+}

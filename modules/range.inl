@@ -5,11 +5,13 @@
 ** ************************************************************************************/
 #include "range.hpp"
 
+using namespace ccb;
 
-// class iterator ---------------------------------------------------------------------
+
+// class Iterator ---------------------------------------------------------------------
 
 template<typename T>
-iterator<T>::iterator(size_type currStart, value_type begValue, value_type stepValue)
+Iterator<T>::Iterator(size_type currStart, value_type begValue, value_type stepValue)
 	: _cursor(currStart)
 	, _step(stepValue)
 	, _value(begValue)
@@ -18,19 +20,19 @@ iterator<T>::iterator(size_type currStart, value_type begValue, value_type stepV
 }
 
 template<typename T>
-iterator<T>::value_type iterator<T>::operator*()const
+T Iterator<T>::operator*()const
 {
 	return _value;
 }
 
 template<typename T>
-bool iterator<T>::operator!=(const iterator &rhs)const
+bool Iterator<T>::operator!=(const Iterator &rhs)const
 {
 	return (_cursor != rhs._cursor);
 }
 
 template<typename T>
-iterator<T> &iterator<T>::operator++()
+Iterator<T> &Iterator<T>::operator++()
 {
 	_cursor ++;
 	_value += _step;
@@ -38,10 +40,10 @@ iterator<T> &iterator<T>::operator++()
 }
 
 
-// class impl -------------------------------------------------------------------------
+// class Impl -------------------------------------------------------------------------
 
 template<typename T>
-impl<T>::impl(value_type begValue, value_type endValue, value_type stepValue)
+Impl<T>::Impl(value_type begValue, value_type endValue, value_type stepValue)
 	: _begin(begValue)
 	, _end(endValue)
 	, _step(stepValue)
@@ -49,7 +51,7 @@ impl<T>::impl(value_type begValue, value_type endValue, value_type stepValue)
 {}
 
 template<typename T>
-impl<T>::size_type impl<T>::getAdjustedCount() const
+size_t Impl<T>::getAdjustedCount() const
 {
 	if (_step > 0 && _begin >= _end)
 	{
@@ -67,19 +69,19 @@ impl<T>::size_type impl<T>::getAdjustedCount() const
 }
 
 template<typename T>
-impl<T>::size_type impl<T>::size()const
+size_t Impl<T>::size()const
 {
 	return _maxCount;
 }
 
 template<typename T>
-impl<T>::const_iterator impl<T>::begin()const
+Impl<T>::const_iterator Impl<T>::begin()const
 {
 	return {0, _begin, _step};
 }
 
 template<typename T>
-impl<T>::const_iterator impl<T>::end()const
+Impl<T>::const_iterator Impl<T>::end()const
 {
 	return {_maxCount, _end, _step};
 }
