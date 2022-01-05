@@ -31,29 +31,10 @@ private:
 	value_type       _value;
 
 public:
-	Iterator(size_type currStart, value_type begValue, value_type stepValue)
-		: _cursor(currStart)
-		, _step(stepValue)
-		, _value(begValue)
-	{
-		_value += (_step * _cursor);
-	}
-	value_type operator*()const
-	{
-		return _value;
-	}
-
-	bool operator!=(const Iterator &rhs)const
-	{
-		return (_cursor != rhs._cursor);
-	}
-
-	Iterator &operator++()
-	{
-		_cursor ++;
-		_value += _step;
-		return *this;
-	}
+	Iterator(size_type currStart, value_type begValue, value_type stepValue);
+	value_type operator*()const;
+	bool operator!=(const Iterator &rhs)const;
+	Iterator &operator++();
 };
 
 
@@ -75,48 +56,16 @@ private:
 	const value_type _step;
 	const size_type  _maxCount;
 
-	size_type getAdjustedCount() const
-	{
-		if (_step > 0 && _begin >= _end)
-		{
-			throw std::logic_error("End value must be greater than begin value.");
-		}
-		else if (_step < 0 && _begin <= _end)
-		{
-			throw std::logic_error("End Value must be less than begin value.");
-		}
-
-		size_type x = static_cast<size_type>((_end - _begin) / _step);
-		if (_begin + (_step * x) != _end) { ++x; }
-
-		return x;
-	}
+	size_type getAdjustedCount() const;
 
 public:
-	Impl(value_type begValue, value_type endValue, value_type stepValue)
-		: _begin(begValue)
-		, _end(endValue)
-		, _step(stepValue)
-		, _maxCount(getAdjustedCount())
-	{}
-
-	size_type size()const
-	{
-		return _maxCount;
-	}
-
-	const_iterator begin()const
-	{
-		return {0, _begin, _step};
-	}
-
-	const_iterator end()const
-	{
-		return {_maxCount, _end, _step};
-	}
-
-
+	Impl(value_type begValue, value_type endValue, value_type stepValue);
+	size_type size()const;
+	const_iterator begin()const;
+	const_iterator end()const;
 };
+
+#include "range.inl"
 
 
 /// \brief Custom range.

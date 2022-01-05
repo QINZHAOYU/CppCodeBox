@@ -59,7 +59,7 @@ size_t Impl<T>::getAdjustedCount() const
 	}
 	else if (_step < 0 && _begin <= _end)
 	{
-		throw std::logic_error("End Value must be less than begin value.")
+		throw std::logic_error("End Value must be less than begin value.");
 	}
 
 	size_type x = static_cast<size_type>((_end - _begin) / _step);
@@ -75,13 +75,13 @@ size_t Impl<T>::size()const
 }
 
 template<typename T>
-Impl<T>::const_iterator Impl<T>::begin()const
+const Iterator<T> Impl<T>::begin() const
 {
 	return {0, _begin, _step};
 }
 
 template<typename T>
-Impl<T>::const_iterator Impl<T>::end()const
+const Iterator<T> Impl<T>::end()const
 {
 	return {_maxCount, _end, _step};
 }
