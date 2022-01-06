@@ -14,8 +14,8 @@
 #include "common/CommHeader.hpp"
 #include "tools/MathFunctions/MathFunctions.hpp"
 #include "modules/hello.hpp"
-#include "modules/RiverNetAutoInit.hpp"
-
+#include "modules/GraphSearchingAlgo.hpp"
+#include "modules/range.hpp"
 
 int main(int argc, char *argv[])
 {
