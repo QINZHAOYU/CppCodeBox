@@ -90,7 +90,7 @@ Optional<T>::operator bool() const
 template<typename T>
 T &Optional<T>::operator *()
 {
-    return *((T *) (&_data));
+    return *((T *) (&_data));  // get the value;
 }
 
 template<typename T>
@@ -106,21 +106,11 @@ T const& Optional<T>::operator *() const
 template<typename T>
 bool Optional<T>::operator == (const Optional<T>& rhs) const
 {
-    bool isEqual = false;
-    if (rhs._hasInit == _hasInit)
-    {
-        if (!_hasInit) 
-        { 
-            isEqual = true; 
-        }
-        else if (rhs._data = _data)
-        {
-            isEqual = true;
-        }
-
-    }
-
-    return ;
+	// first, check if initialization status;
+	// if same, check the value.
+    return (!bool(*this)) != (!rhs) 
+	? false 
+	: (!bool(*this) ? true : (*(*this)) == (*rhs));
 }
 
 template<typename T>
@@ -128,7 +118,7 @@ bool Optional<T>::operator < (const Optional<T>& rhs) const
 {
 	bool isLess = (!rhs)
     ? false 
-    : (!bool(*this) ? true : (*(*this) < (*rhs)));
+    : ( !bool(*this) ? true : (*(*this) < (*rhs)) );
 
     return isLess;
 }
@@ -177,9 +167,9 @@ void Optional<T>::assign(Optional &&other)
 {
 	if (other.isInit())
 	{
-		move(std::move(other));
+		move(std::move(other._data));
         _hasInit = true;
-        other->destroy();
+        other.destroy();
 	}
 	else
 	{
@@ -191,7 +181,7 @@ template<typename T>
 void Optional<T>::move(data_t&& val)
 {
 	destroy();
-	new (&m_data) T(std::move(*((T*)(&val))));
+	new (&_data) T(std::move(*((T*)(&val))));
 }
 
 template<typename T>
