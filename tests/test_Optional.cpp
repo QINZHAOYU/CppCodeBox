@@ -18,7 +18,7 @@ TEST_CASE("tests of class Optional")
     SECTION("built-in variable")
 	{
         Optional<std::string> a("ok");
-	    Optional<std::string> b("ok");
+	    Optional<std::string> b("yes");
 	    Optional<std::string> c("aa");
     
         if (a) cout << "a is inited: " << *a << endl;
@@ -28,6 +28,11 @@ TEST_CASE("tests of class Optional")
         cout << "assign a to c" << endl;
         if (a) cout << "a is inited: " << *a << endl;
         if (c) cout << "c is inited: " << *c << endl; 
+        if (a == c) cout << "a == c" << endl;
+        if (a != b) cout << "a != b" << endl;
+
+        a = std::move(b);
+        if (a) cout << "a is assiged by right reference: " << *a << endl;        
     }
 
     SECTION("custom object")
