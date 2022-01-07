@@ -31,11 +31,13 @@ private:
 public:
 	Optional();
 	Optional(const T &v);
+    Optional(T &&v);
 	Optional(const Optional &other);
+    Optional(Optional &&other);
 	~Optional();	
 
 	Optional &operator=(const Optional &other);
-	Optional &operator=(const T &val);
+    Optional &operator=(Optional &&other);
 
 	template<class... Args>
 	void emplace(Args &&... args);
@@ -43,7 +45,13 @@ public:
 	bool isInit() const;
 
 	explicit operator bool() const;
-	T &operator *() const;
+
+	T &operator *() ;
+    T const& operator *() const;
+
+	bool operator == (const Optional<T>& rhs) const;
+	bool operator < (const Optional<T>& rhs) const;
+	bool operator != (const Optional<T>& rhs);
 
 private:
 	template<class... Args>
@@ -52,10 +60,10 @@ private:
 	void destroy();
 
 	void assign(const Optional &other);
+	void assign(Optional &&other);
 
+	void move(data_t&& val);
 	void copy(const data_t &val);
-
-
 };
 #include "optional.inl"
 

@@ -19,11 +19,27 @@ Optional<T>::Optional(const T &v)
 }
 
 template<typename T>
+Optional<T>::Optional(T &&v)
+{
+	create(std::move(v));
+}
+
+template<typename T>
 Optional<T>::Optional(const Optional &other)
 {
 	if (other.isInit())
 	{
 		assign(other);
+	}
+}
+
+template<typename T>
+Optional<T>::Optional(Optional &&other)
+{
+	if (other.isInit())
+	{
+		assign(std::move(other));
+        other.destroy();
 	}
 }
 
@@ -41,16 +57,14 @@ Optional<T> &Optional<T>::operator=(const Optional &other)
 		assign(other);
 		return *this;
 	}
-	throw logic_error("is not valid.");
+	throw std::logic_error("is not valid.");
 }
 
 template<typename T>
-Optional<T> &Optional<T>::operator=(const T &val)
+Optional<T> &Optional<T>::operator=(Optional &&other)
 {
-	_hasInit = true;
-	destroy();
-	new (&_data) T(*((T *)(&val)));
-	return *this;
+    assign(std::move(other));
+    return *this;
 }
 
 template<typename T>
@@ -58,7 +72,7 @@ template<class... Args>
 void Optional<T>::emplace(Args &&... args)
 {
 	destroy();
-	create(forward<Args>(args)...);
+	create(std::forward<Args>(args)...);
 }
 
 template<typename T>
@@ -74,20 +88,63 @@ Optional<T>::operator bool() const
 }
 
 template<typename T>
-T &Optional<T>::operator *() const
+T &Optional<T>::operator *()
+{
+    return *((T *) (&_data));
+}
+
+template<typename T>
+T const& Optional<T>::operator *() const
 {
 	if (isInit())
 	{
 		return *((T *) (&_data));
 	}
-	throw logic_error("is not inited.");
+	throw std::logic_error("is not inited.");
 }
+
+template<typename T>
+bool Optional<T>::operator == (const Optional<T>& rhs) const
+{
+    bool isEqual = false;
+    if (rhs._hasInit == _hasInit)
+    {
+        if (!_hasInit) 
+        { 
+            isEqual = true; 
+        }
+        else if (rhs._data = _data)
+        {
+            isEqual = true;
+        }
+
+    }
+
+    return ;
+}
+
+template<typename T>
+bool Optional<T>::operator < (const Optional<T>& rhs) const
+{
+	bool isLess = (!rhs)
+    ? false 
+    : (!bool(*this) ? true : (*(*this) < (*rhs)));
+
+    return isLess;
+}
+
+template<typename T>
+bool Optional<T>::operator != (const Optional<T>& rhs)
+{
+	return !(*this == (rhs));
+}
+
 
 template<typename T>
 template<class... Args>
 void Optional<T>::create(Args &&... args)
 {
-	new (&_data) T(forward<Args>(args)...);
+	new (&_data) T(std::forward<Args>(args)...);
 	_hasInit = true;
 }
 
@@ -106,13 +163,35 @@ void Optional<T>::assign(const Optional &other)
 {
 	if (other.isInit())
 	{
+		copy(other._data);        
 		_hasInit = true;
-		copy(other._data);
 	}
 	else
 	{
 		destroy();
 	}
+}
+
+template<typename T>
+void Optional<T>::assign(Optional &&other)
+{
+	if (other.isInit())
+	{
+		move(std::move(other));
+        _hasInit = true;
+        other->destroy();
+	}
+	else
+	{
+		destroy();
+	}
+}
+
+template<typename T>
+void Optional<T>::move(data_t&& val)
+{
+	destroy();
+	new (&m_data) T(std::move(*((T*)(&val))));
 }
 
 template<typename T>
