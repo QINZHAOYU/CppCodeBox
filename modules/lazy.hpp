@@ -56,7 +56,7 @@ private:
 
 // auxiliary function to simplify calling of class Lazy.
 template<class Func, typename... Args>
-Lazy<typename std::result_of<Func(Args...)>::type> 
+Lazy<typename std::result_of<Func(Args...)>::type>
 lazy(Func &&func, Args &&... args)
 {
 	using lazy_t = typename std::result_of<Func(Args...)>::type;
