@@ -29,7 +29,7 @@ bool DirectedGraphHandler::setGraph(const Graph &graph)
 	});
 
 	// map vertices.
-    _verIdToInd.clear();    
+	_verIdToInd.clear();
 	int ind = 0;
 	std::for_each(vertices.begin(), vertices.end(), [this, &ind](const auto & iter)
 	{
@@ -57,32 +57,32 @@ bool DirectedGraphHandler::setGraph(const Graph &graph)
 
 bool DirectedGraphHandler::isGraphConnected()
 {
-    // to check for weak connectivity of directed graph.
+	// to check for weak connectivity of directed graph.
 
-    int count = 0;
-    int size = static_cast<int>(_matrix.size());
-    VecInt visited(size, 0);
+	int count = 0;
+	int size = static_cast<int>(_matrix.size());
+	VecInt visited(size, 0);
 
-    // lambda function used for recursive.
-    std::function<void(int ind)> deepFirstSearch;
-    deepFirstSearch = [this, &deepFirstSearch, &visited, &count, size](int ind)
-    { 
-        visited[ind] = 1;
-        count ++;
+	// lambda function used for recursive.
+	std::function<void(int ind)> deepFirstSearch;
+	deepFirstSearch = [this, &deepFirstSearch, &visited, &count, size](int ind)
+	{
+		visited[ind] = 1;
+		count ++;
 
-        for (int j = 0; j < size; ++j)
-        {
-            double link = (std::min)(_matrix[ind][j], _matrix[j][ind]);
-            if (visited[j] == 0 && link < 1.0e6)
-            {
-                deepFirstSearch(j);
-            }
-        }
-    };
-    deepFirstSearch(0);
+		for (int j = 0; j < size; ++j)
+		{
+			double link = (std::min)(_matrix[ind][j], _matrix[j][ind]);
+			if (visited[j] == 0 && link < 1.0e6)
+			{
+				deepFirstSearch(j);
+			}
+		}
+	};
+	deepFirstSearch(0);
 
-    // truely connected if all vertices visited.
-	return (count == size) ? true:false;
+	// truely connected if all vertices visited.
+	return (count == size) ? true : false;
 }
 
 void DirectedGraphHandler::getGraphMatrix(GraphMatrix &matrix) const

@@ -17,46 +17,46 @@ int    test5(VecInt x) {return x.front(); }
 
 TEST_CASE("tests of class FuncWrapper")
 {
-    SECTION("wrapper of lambda function")
-    {
-        auto func = [](){ cout << "void\n"; };
+	SECTION("wrapper of lambda function")
+	{
+		auto func = []() { cout << "void\n"; };
 
-        FuncWrapper(func);  
-    }
+		FuncWrapper(func);
+	}
 
-    SECTION("wrapper of void(void)")
-    {
-        FuncWrapper(test0);
-    }
+	SECTION("wrapper of void(void)")
+	{
+		FuncWrapper(test0);
+	}
 
-    SECTION("wrapper of int(void)")
-    {
-        int res = FuncWrapper(test1);
-        REQUIRE(res == 1);
-    }
+	SECTION("wrapper of int(void)")
+	{
+		int res = FuncWrapper(test1);
+		REQUIRE(res == 1);
+	}
 
-    SECTION("wrapper of int(int)")
-    {
-        int res = FuncWrapper(test2, 2);
-        REQUIRE(res == 2);
-    }
+	SECTION("wrapper of int(int)")
+	{
+		int res = FuncWrapper(test2, 2);
+		REQUIRE(res == 2);
+	}
 
-    SECTION("wrapper of string(string, string)")
-    {
-        string res = FuncWrapper(test3, "abd", "opq");
-        REQUIRE(res == "abdopq");
-    }
+	SECTION("wrapper of string(string, string)")
+	{
+		string res = FuncWrapper(test3, "abd", "opq");
+		REQUIRE(res == "abdopq");
+	}
 
-    SECTION("wrapper of size_t(string)")
-    {
-        size_t res = FuncWrapper(test4, "abd");
-        REQUIRE(res == 3);
-    }
+	SECTION("wrapper of size_t(string)")
+	{
+		size_t res = FuncWrapper(test4, "abd");
+		REQUIRE(res == 3);
+	}
 
-    SECTION("wrapper of int(VecInt)")
-    {
-        int res = FuncWrapper(test5, VecInt(5, 10));
-        REQUIRE(res == 10);
-    }
+	SECTION("wrapper of int(VecInt)")
+	{
+		int res = FuncWrapper(test5, VecInt(5, 10));
+		REQUIRE(res == 10);
+	}
 }
 

@@ -18,7 +18,7 @@ namespace ccb
 {
 /// \brief A universal function wrapper template.
 template<class Function, class... Args>
-inline auto FuncWrapper(Function &&f, Args &&... args) 
+inline auto FuncWrapper(Function &&f, Args &&... args)
 -> decltype(f(std::forward<Args>(args)...))
 {
 	return f(std::forward<Args>(args)...);

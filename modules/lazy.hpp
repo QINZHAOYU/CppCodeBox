@@ -17,6 +17,8 @@
 #include <functional>
 
 
+namespace ccb
+{
 template<typename T>
 class Lazy
 {
@@ -27,10 +29,10 @@ public:
 	Lazy(Func &f, Args... args) // function and arguments have binded for using later.
 	{
 		//_func = [&f, &args...]() {return f(args...);};
-		_func = bind(f, forward<Args>(args)...);  // _func has no arguments, bug f has.
+		_func = std::bind(f, std::forward<Args>(args)...);  // _func has no arguments, bug f has.
 	}
 
-	T &value()
+	T &value()  // template class type is bound with `_func`(Func) return value.
 	{
 		if (!_value.isInit())
 		{
@@ -49,11 +51,16 @@ private:
 	std::function<T()> _func; // one function without arguments.
 	Optional<T> _value;
 };
+#include "lazy.inl"
 
 
 // auxiliary function to simplify calling of class Lazy.
 template<class Func, typename... Args>
-Lazy<typename std::result_of<Func(Args...)>::type> lazy(Func &&func, Args &&... args)
+Lazy<typename std::result_of<Func(Args...)>::type>
+lazy(Func &&func, Args &&... args)
 {
-	return Lazy<typename result_of<Func(Args...)>::type>(forward<Func>(func), forward<Args>(args)...);
+	using lazy_t = typename std::result_of<Func(Args...)>::type;
+	return Lazy<lazy_t>(std::forward<Func>(func), std::forward<Args>(args)...);
+}
+
 }
