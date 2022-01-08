@@ -9,5 +9,8 @@ target_link_libraries(Catch2Test
 target_include_directories(Catch2Test 
     PUBLIC  "${PROJECT_SOURCE_DIR}"
     )
-
-
+if (LINUX)
+    target_link_libraries(Catch2Test
+    PUBLIC dl
+    )
+endif ()

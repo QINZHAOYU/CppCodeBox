@@ -39,6 +39,7 @@
 #include <windows.h>
 #elif defined(LINUX)
 #include <dlfcn.h>
+#include <stdexcept>
 #endif
 
 
