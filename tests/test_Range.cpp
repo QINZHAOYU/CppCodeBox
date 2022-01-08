@@ -1,6 +1,6 @@
 #include "modules/range.hpp"
 #include "tools/Catch/catch.hpp"
-#include "common/Commstructs.hpp"
+#include "common/CommStructs.hpp"
 #include <numeric>
 
 using namespace ccb;

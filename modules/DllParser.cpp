@@ -51,17 +51,17 @@ bool DllParser::UnLoad()
 
 
 // class LinuxDllParser -----------------------------------------------------------
-#elif LINUX
+#else defined(LINUX)
 
-LinuxDllParser::LinuxDllParser(): _hMod(nullptr)
+DllParser::DllParser(): _hMod(nullptr)
 {}
 
-LinuxDllParser::~LinuxDllParser()
+DllParser::~DllParser()
 {
     UnLoad();
 }
 
-bool LinuxDllParser::Load(const string &dllPath)
+bool DllParser::Load(const string &dllPath)
 {
     _hMod = dlopen(dllPath.c_str(), RTLD_LAZY);
     if (_hMod == nullptr)
@@ -73,14 +73,14 @@ bool LinuxDllParser::Load(const string &dllPath)
     return true;
 }
 
-bool WinDllParser::UnLoad()
+bool DllParser::UnLoad()
 {
     if (_hMod == nullptr)
     {
         return true;
     }
 
-    int status = dlclose(dll);
+    int status = dlclose(_hMod);
     if (status != 0)
     {
         return false;

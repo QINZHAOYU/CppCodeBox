@@ -65,7 +65,7 @@ public:
     if (f == nullptr)
     {
         string msg = "Invalid function name " + funcName;
-        throw std::exception(msg.c_str());
+        throw std::logic_error(msg.c_str());
     }
 
     return f(std::forward<Args>(args)...);
@@ -76,14 +76,14 @@ private:
     std::map<string, FARPROC> _map;
 };
 
-#elif LINUX
+#else defined(LINUX)
 
 /// \brief Dll parser and wrapper on linux.
 class DllParser
 {
 public:
-    LinuxDllParser();
-    ~LinuxDllParser();
+    DllParser();
+    ~DllParser();
 
     bool Load(const string &dllPath);
     bool UnLoad();
@@ -122,7 +122,7 @@ public:
     if (f == nullptr)
     {
         string msg = "Invalid function name " + funcName;
-        throw std::exception(msg.c_str());
+        throw std::logic_error(msg.c_str());
     }
 
     return f(std::forward<Args>(args)...);

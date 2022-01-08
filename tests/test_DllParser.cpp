@@ -1,10 +1,11 @@
 #include "tools/Catch/catch.hpp"
 #include "modules/DllParser.hpp"
+#include "common/CommHeader.hpp"
 
 using namespace ccb;
 
 
-TEST_CASE("tests for class WinDllParser")
+TEST_CASE("tests for class DllParser")
 {
     DllParser dllParser;
 
@@ -24,7 +25,7 @@ TEST_CASE("tests for class WinDllParser")
         CHECK(add == 13);
 
         CHECK(dllParser.UnLoad());
-        REQUIRE_THROWS_AS(dllParser.ExcecuteFunc<int(int&, int&)>("Add", a, b), std::exception);
+        REQUIRE_THROWS_AS(dllParser.ExcecuteFunc<int(int&, int&)>("Add", a, b), std::logic_error);
     }
 
     SECTION("test of function without args on windows")
@@ -36,14 +37,17 @@ TEST_CASE("tests for class WinDllParser")
         dllParser.ExcecuteFunc<void()>("printHello");
     }
 
-#elif LINUX
+#else defined(LINUX)
     SECTION("test of function without args on linux")
     {
-        string str("MyCppKits.so");
+        string str("/root/projects/CppCodeBox/build/modules/MyCppKits.so");
         CHECK(dllParser.Load(str));
 
         REQUIRE(dllParser.GetFunction<void()>("printHello") != nullptr);
-        dllParser.ExcecuteFunc<void()>("printHello");        
+        dllParser.ExcecuteFunc<void()>("printHello");  
+
+        CHECK(dllParser.UnLoad());
+        REQUIRE_THROWS_AS(dllParser.ExcecuteFunc<void()>("printHello"), std::logic_error);              
     }
 
 #endif 

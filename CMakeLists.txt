@@ -11,11 +11,16 @@ elseif (CMAKE_HOST_UNIX)
     set(LINUX 1)
 endif ()
 
-# 设置项目名称及c++版本要求。
+# 设置项目名称。
 project(${ProjectName} VERSION 21.10.0)
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# 设置指定C++编译器版本。
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(COMPILER_SUPPORTS_CXX11)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17") 
+endif()
 
 message(STATUS "-----------------------------------------------------------------")
 message(STATUS "------------------------ ${ProjectName} ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} ------------------------")
@@ -48,7 +53,7 @@ list(APPEND EXTRA_LIBS MyCppKits)
 set(MyLibPath $ENV{CPPLIBS}/mylibs/)
 find_library(MY_LIBS NAMES MathSqrt PATHS ${MyLibPath}/lib)
 if (NOT MY_LIBS)
-    message(FATAL "EXTERNAL_LIBS not found")
+    message(FATAL " EXTERNAL_LIBS not found")
 else ()
     list(APPEND EXTRA_INC ${MyLibPath}/inc)
 endif ()
