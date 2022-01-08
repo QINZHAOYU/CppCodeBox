@@ -19,12 +19,14 @@
 
 namespace ccb
 {
-/// \brief Dll parser and wrapper on windows.
-class WinDllParser
+
+#ifdef WINDOWS
+/// \brief Dll parser and wrapper.
+class DllParser
 {
 public:
-    WinDllParser();
-    ~WinDllParser();
+    DllParser();
+    ~DllParser();
 
     bool Load(const string &dllPath);
     bool UnLoad();
@@ -37,7 +39,7 @@ public:
             cout << "Dll not loaded.\n";
             return nullptr;
         }
-        
+
     auto it = _map.find(funcName);
     if (it == _map.end())
     {
@@ -73,6 +75,67 @@ private:
     HMODULE _hMod;
     std::map<string, FARPROC> _map;
 };
+
+#elif LINUX
+
+/// \brief Dll parser and wrapper on linux.
+class DllParser
+{
+public:
+    LinuxDllParser();
+    ~LinuxDllParser();
+
+    bool Load(const string &dllPath);
+    bool UnLoad();
+
+    template<typename T>
+    std::function<T> GetFunction(const string &funcName)
+    {
+        if (_hMod == nullptr)
+        {
+            cout << "Dll not loaded.\n";
+            return nullptr;
+        }
+
+    auto it = _map.find(funcName);
+    if (it == _map.end())
+    {
+        auto addr = dlsym(_hMod, funcName.c_str());
+        if (!addr)
+        {
+            cout << "Can find this function " << funcName << endl;
+            return nullptr;
+        }
+
+        _map.insert(std::make_pair(funcName, addr));
+        it = _map.find(funcName);
+    }
+
+    return std::function<T> ((T*)(it->second));
+}
+
+    template<typename T, typename... Args>
+    typename std::result_of<std::function<T>(Args...)>::type 
+    ExcecuteFunc(const string &funcName, Args&& ...args)
+{
+    auto f = GetFunction<T>(funcName);
+    if (f == nullptr)
+    {
+        string msg = "Invalid function name " + funcName;
+        throw std::exception(msg.c_str());
+    }
+
+    return f(std::forward<Args>(args)...);
+}
+
+private:
+    using Parser_t = void*;
+
+    Parser_t _hMod;
+    std::map<string, Parser_t> _map;
+};
+
+#endif
 
 }
 

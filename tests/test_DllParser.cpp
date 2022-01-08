@@ -6,10 +6,10 @@ using namespace ccb;
 
 TEST_CASE("tests for class WinDllParser")
 {
-#ifdef WINDOWS
-    WinDllParser dllParser;
+    DllParser dllParser;
 
-    SECTION("test of functions with args")
+#ifdef WINDOWS
+    SECTION("test of functions with args on windows")
 	{
 	    string str("data_DllParser.dll");
     
@@ -27,7 +27,7 @@ TEST_CASE("tests for class WinDllParser")
         REQUIRE_THROWS_AS(dllParser.ExcecuteFunc<int(int&, int&)>("Add", a, b), std::exception);
     }
 
-    SECTION("test of function without args")
+    SECTION("test of function without args on windows")
     {
         string str("MyCppKits.dll");
         CHECK(dllParser.Load(str));
@@ -36,8 +36,18 @@ TEST_CASE("tests for class WinDllParser")
         dllParser.ExcecuteFunc<void()>("printHello");
     }
 
-    dllParser.~WinDllParser();
-#endif
+#elif LINUX
+    SECTION("test of function without args on linux")
+    {
+        string str("MyCppKits.so");
+        CHECK(dllParser.Load(str));
+
+        REQUIRE(dllParser.GetFunction<void()>("printHello") != nullptr);
+        dllParser.ExcecuteFunc<void()>("printHello");        
+    }
+
+#endif 
+    dllParser.~DllParser();
 }
 
 

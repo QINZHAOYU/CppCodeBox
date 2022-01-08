@@ -8,15 +8,18 @@
 using namespace ccb;
 
 
-WinDllParser::WinDllParser(): _hMod(nullptr)
+// class DllParser -------------------------------------------------------------
+#ifdef WINDOWS
+
+DllParser::DllParser(): _hMod(nullptr)
 {}
 
-WinDllParser::~WinDllParser()
+DllParser::~DllParser()
 {
     UnLoad();
 }
 
-bool WinDllParser::Load(const string &dllPath)
+bool DllParser::Load(const string &dllPath)
 {
     _hMod = LoadLibraryA(dllPath.data());
     if (_hMod == nullptr)
@@ -28,7 +31,7 @@ bool WinDllParser::Load(const string &dllPath)
     return true;
 }
 
-bool WinDllParser::UnLoad()
+bool DllParser::UnLoad()
 {
     if (_hMod == nullptr)
     {
@@ -46,36 +49,52 @@ bool WinDllParser::UnLoad()
     return true;
 }
 
-// template<typename T>
-// std::function<T> WinDllParser::GetFunction(const string &funcName)
-// {
-//     auto it = _map.find(funcName);
-//     if (it == _map.end())
-//     {
-//         auto addr = GetProcAddress(_hMod, funcName.c_str());
-//         if (!addr)
-//         {
-//             cout << "Can find this function " << funcName << endl;
-//             return nullptr;
-//         }
 
-//         _map.insert(std::make_pair(funcName, addr));
-//         it = _map.find(funcName);
-//     }
+// class LinuxDllParser -----------------------------------------------------------
+#elif LINUX
 
-//     return std::function<T> ((T*)(it->second));
-// }
+LinuxDllParser::LinuxDllParser(): _hMod(nullptr)
+{}
 
-// template<typename T, typename... Args>
-// typename std::result_of<std::function<T>(Args...)>::type 
-// WinDllParser::ExcecuteFunc(const string &funcName, Args&& ...args)
-// {
-//     auto f = GetFunction<T>(funcName);
-//     if (f == nullptr)
-//     {
-//         string msg = "Invalid function name " + funcName;
-//         throw std::exception(msg);
-//     }
+LinuxDllParser::~LinuxDllParser()
+{
+    UnLoad();
+}
 
-//     return f(std::forward<Args>(args)...);
-// }
+bool LinuxDllParser::Load(const string &dllPath)
+{
+    _hMod = dlopen(dllPath.c_str(), RTLD_LAZY);
+    if (_hMod == nullptr)
+    {
+        cout << "LoadLibrary failed.\n";
+        return false;
+    }
+
+    return true;
+}
+
+bool WinDllParser::UnLoad()
+{
+    if (_hMod == nullptr)
+    {
+        return true;
+    }
+
+    int status = dlclose(dll);
+    if (status != 0)
+    {
+        return false;
+    }
+
+    _hMod = nullptr;
+    _map.clear();
+    return true;
+}
+
+
+#endif
+
+
+
+
+
