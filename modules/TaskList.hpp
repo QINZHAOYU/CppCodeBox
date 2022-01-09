@@ -31,7 +31,6 @@ public:
 	Task(std::function<R(Args...)> &f) : _fn(f)
 	{}
 
-	template<typename... Args>
 	R Run(Args &&... args)
 	{
 		return _fn(std::forward<Args>(args)...);
