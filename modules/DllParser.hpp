@@ -25,55 +25,55 @@ namespace ccb
 class DllParser
 {
 public:
-    DllParser();
-    ~DllParser();
+	DllParser();
+	~DllParser();
 
-    bool Load(const string &dllPath);
-    bool UnLoad();
+	bool Load(const string &dllPath);
+	bool UnLoad();
 
-    template<typename T>
-    std::function<T> GetFunction(const string &funcName)
-    {
-        if (_hMod == nullptr)
-        {
-            cout << "Dll not loaded.\n";
-            return nullptr;
-        }
+	template<typename T>
+	std::function<T> GetFunction(const string &funcName)
+	{
+		if (_hMod == nullptr)
+		{
+			cout << "Dll not loaded.\n";
+			return nullptr;
+		}
 
-    auto it = _map.find(funcName);
-    if (it == _map.end())
-    {
-        auto addr = GetProcAddress(_hMod, funcName.c_str());
-        if (!addr)
-        {
-            cout << "Can find this function " << funcName << endl;
-            return nullptr;
-        }
+		auto it = _map.find(funcName);
+		if (it == _map.end())
+		{
+			auto addr = GetProcAddress(_hMod, funcName.c_str());
+			if (!addr)
+			{
+				cout << "Can find this function " << funcName << endl;
+				return nullptr;
+			}
 
-        _map.insert(std::make_pair(funcName, addr));
-        it = _map.find(funcName);
-    }
+			_map.insert(std::make_pair(funcName, addr));
+			it = _map.find(funcName);
+		}
 
-    return std::function<T> ((T*)(it->second));
-}
+		return std::function<T> ((T *)(it->second));
+	}
 
-    template<typename T, typename... Args>
-    typename std::result_of<std::function<T>(Args...)>::type 
-    ExcecuteFunc(const string &funcName, Args&& ...args)
-{
-    auto f = GetFunction<T>(funcName);
-    if (f == nullptr)
-    {
-        string msg = "Invalid function name " + funcName;
-        throw std::logic_error(msg.c_str());
-    }
+	template<typename T, typename... Args>
+	typename std::result_of<std::function<T>(Args...)>::type
+	ExcecuteFunc(const string &funcName, Args &&...args)
+	{
+		auto f = GetFunction<T>(funcName);
+		if (f == nullptr)
+		{
+			string msg = "Invalid function name " + funcName;
+			throw std::logic_error(msg.c_str());
+		}
 
-    return f(std::forward<Args>(args)...);
-}
+		return f(std::forward<Args>(args)...);
+	}
 
 private:
-    HMODULE _hMod;
-    std::map<string, FARPROC> _map;
+	HMODULE _hMod;
+	std::map<string, FARPROC> _map;
 };
 
 #elif defined(LINUX)
@@ -82,57 +82,57 @@ private:
 class DllParser
 {
 public:
-    DllParser();
-    ~DllParser();
+	DllParser();
+	~DllParser();
 
-    bool Load(const string &dllPath);
-    bool UnLoad();
+	bool Load(const string &dllPath);
+	bool UnLoad();
 
-    template<typename T>
-    std::function<T> GetFunction(const string &funcName)
-    {
-        if (_hMod == nullptr)
-        {
-            cout << "Dll not loaded.\n";
-            return nullptr;
-        }
+	template<typename T>
+	std::function<T> GetFunction(const string &funcName)
+	{
+		if (_hMod == nullptr)
+		{
+			cout << "Dll not loaded.\n";
+			return nullptr;
+		}
 
-    auto it = _map.find(funcName);
-    if (it == _map.end())
-    {
-        auto addr = dlsym(_hMod, funcName.c_str());
-        if (!addr)
-        {
-            cout << "Can find this function " << funcName << endl;
-            return nullptr;
-        }
+		auto it = _map.find(funcName);
+		if (it == _map.end())
+		{
+			auto addr = dlsym(_hMod, funcName.c_str());
+			if (!addr)
+			{
+				cout << "Can find this function " << funcName << endl;
+				return nullptr;
+			}
 
-        _map.insert(std::make_pair(funcName, addr));
-        it = _map.find(funcName);
-    }
+			_map.insert(std::make_pair(funcName, addr));
+			it = _map.find(funcName);
+		}
 
-    return std::function<T> ((T*)(it->second));
-}
+		return std::function<T> ((T *)(it->second));
+	}
 
-    template<typename T, typename... Args>
-    typename std::result_of<std::function<T>(Args...)>::type 
-    ExcecuteFunc(const string &funcName, Args&& ...args)
-{
-    auto f = GetFunction<T>(funcName);
-    if (f == nullptr)
-    {
-        string msg = "Invalid function name " + funcName;
-        throw std::logic_error(msg.c_str());
-    }
+	template<typename T, typename... Args>
+	typename std::result_of<std::function<T>(Args...)>::type
+	ExcecuteFunc(const string &funcName, Args &&...args)
+	{
+		auto f = GetFunction<T>(funcName);
+		if (f == nullptr)
+		{
+			string msg = "Invalid function name " + funcName;
+			throw std::logic_error(msg.c_str());
+		}
 
-    return f(std::forward<Args>(args)...);
-}
+		return f(std::forward<Args>(args)...);
+	}
 
 private:
-    using Parser_t = void*;
+	using Parser_t = void*;
 
-    Parser_t _hMod;
-    std::map<string, Parser_t> _map;
+	Parser_t _hMod;
+	std::map<string, Parser_t> _map;
 };
 
 #endif

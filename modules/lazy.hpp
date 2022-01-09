@@ -26,7 +26,7 @@ public:
 	Lazy() {}
 
 	template<typename Func, typename... Args>
-	Lazy(Func &f, Args&&... args) // function and arguments have binded for using later.
+	Lazy(Func &f, Args &&... args) // function and arguments have binded for using later.
 	{
 		//_func = [&f, &args...]() {return f(args...);};
 		_func = std::bind(f, std::forward<Args>(args)...);  // _func has no arguments, bug f has.
