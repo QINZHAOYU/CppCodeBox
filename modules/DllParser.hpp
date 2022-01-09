@@ -76,7 +76,7 @@ private:
     std::map<string, FARPROC> _map;
 };
 
-#else defined(LINUX)
+#elif defined(LINUX)
 
 /// \brief Dll parser and wrapper on linux.
 class DllParser

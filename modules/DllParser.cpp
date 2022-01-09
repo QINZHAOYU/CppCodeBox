@@ -51,7 +51,7 @@ bool DllParser::UnLoad()
 
 
 // class LinuxDllParser -----------------------------------------------------------
-#else defined(LINUX)
+#elif defined(LINUX)
 
 DllParser::DllParser(): _hMod(nullptr)
 {}

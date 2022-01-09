@@ -37,7 +37,7 @@ TEST_CASE("tests for class DllParser")
         dllParser.ExcecuteFunc<void()>("printHello");
     }
 
-#else defined(LINUX)
+#elif defined(LINUX)
     SECTION("test of function without args on linux")
     {
         string str("/root/projects/CppCodeBox/build/modules/MyCppKits.so");
