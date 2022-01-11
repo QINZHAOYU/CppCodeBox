@@ -41,7 +41,9 @@ public:
         using type = typename std::tuple_element<I, tuple<Args...>>::type;
     };
 
-    using tuple_type = typename std::decay<Args...>::type;
+    // using tuple_type = typename std::decay<Args>...::type;
+    template<size_t N>
+    using arg_type = typename std::tuple_element<N, tuple<Args...>>::type;
 };
 
 
@@ -58,10 +60,28 @@ class function_traits<std::function<Ret(Args...)>> : public function_traits<Ret(
 
 
 /// \brief Function traits for class member function pointer.
-template<typename Ret, typename ClassType, typename... Args>
-class function_traits<Ret(ClassType::*)(Args...)> : function_traits<Ret(Args...)>
-{};
+/// `_VA_ARGS` is used to contain cv symbol.
+// #define FUNCTION_TRAITS(...)\
+// template <typename Ret, typename ClassType, typename... Args>\
+// class function_traits<Ret(ClassType::*)(Args...) __VA_ARGS__> : public function_traits<Ret(Args...)>{};\
 
+// FUNCTION_TRAITS()
+// FUNCTION_TRAITS(const)
+// FUNCTION_TRAITS(volatile)
+// FUNCTION_TRAITS(const volatile)
+
+template <typename Ret, typename ClassType, typename... Args>
+class function_traits<Ret(ClassType::*)(Args...)> : public function_traits<Ret(Args...)>
+{};
+template <typename Ret, typename ClassType, typename... Args>
+class function_traits<Ret(ClassType::*)(Args...) const> : public function_traits<Ret(Args...)>
+{};
+template <typename Ret, typename ClassType, typename... Args>
+class function_traits<Ret(ClassType::*)(Args...) volatile> : public function_traits<Ret(Args...)>
+{};
+template <typename Ret, typename ClassType, typename... Args>
+class function_traits<Ret(ClassType::*)(Args...) const volatile> : public function_traits<Ret(Args...)>
+{};
 
 /// \brief Function traits for function object.
 template<typename Callable>
