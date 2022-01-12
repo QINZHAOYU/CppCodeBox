@@ -1,12 +1,12 @@
 /** *****************************************************************************
-*   @copyright :  Copyright (C) 2021 Qin ZhaoYu. All rights reserved.
+*   @copyright :  Copyright (C) 2022 Qin ZhaoYu. All rights reserved.
 *
 *   @author    :  Qin ZhaoYu.
 *   @brief     :  To implement class Variant.
 *
 *   Change History:
 *   -----------------------------------------------------------------------------
-*   --version-1.0, 2021/10/11, Qin ZhaoYu,
+*   --version-1.0, 2022/01/11, Qin ZhaoYu,
 *   To init model.
 *
 ** ******************************************************************************/
@@ -71,12 +71,14 @@ public:
 template<typename T, typename... Rest>
 class IndexOf<T, T, Rest...>
 {
+public:    
     enum { value = 0 };
 };
 
 template<typename T>
 class IndexOf<T>
 {
+public:    
     enum { value = -1 };
 };
 
@@ -88,12 +90,14 @@ class At;
 template<int Index, typename First, typename... Types>
 class At<Index, First, Types...>
 {
+public:    
     using type = typename At<Index-1, Types...>::type;
 };
 
 template<typename T, typename... Types>
 class At<0, T, Types...>
 {
+public:    
     using type = T;
 };
 
@@ -106,12 +110,13 @@ class VariantHelper;
 template<typename T, typename... Args>
 class VariantHelper<T, Args...> 
 {
-	inline static void Destroy(std::type_index id, void * data)
+public:    
+	inline static void destroy(std::type_index id, void * data)
 	{
 		if (id == std::type_index(typeid(T)))
 			reinterpret_cast<T*>(data)->~T();
 		else
-			VariantHelper<Args...>::Destroy(id, data);
+			VariantHelper<Args...>::destroy(id, data);
 	}
 
 	inline static void move(std::type_index old_t, void * old_v, void * new_v)
@@ -134,7 +139,8 @@ class VariantHelper<T, Args...>
 template<>
 class VariantHelper<>  
 {
-	inline static void Destroy(std::type_index id, void * data) {  }
+public:
+	inline static void destroy(std::type_index id, void * data) {  }
 	inline static void move(std::type_index old_t, void * old_v, void * new_v) { }
 	inline static void copy(std::type_index old_t, const void * old_v, void * new_v) { }
 };
@@ -152,37 +158,37 @@ public:
     {}
     Variant(Variant<Types...> &&old) : _typeIndex(old._typeIndex)
     {
-        Move(old._typeIndex, &old._data, &_data);
+        helper_t::move(old._typeIndex, &old._data, &_data);
     }
     Variant(const Variant<Types...> &old) : _typeIndex(old._typeIndex)
     {
-        Copy(old._typeIndex, &old._data, &_data);
+        helper_t::copy(old._typeIndex, &old._data, &_data);
     } 
     ~Variant()
     {
-        Destroy(_typeIndex, &_data);
+        helper_t::destroy(_typeIndex, &_data);
     }
 
     template<typename T, class=typename std::enable_if<Contains<
     typename std::decay<T>::type, Types...>::value>::type>
     Variant(T &&value) : _typeIndex(typeid(void))
     {
-        Destroy(_typeIndex, &_data);
+        helper_t::destroy(_typeIndex, &_data);
 
         using U = typename std::decay<T>::type;
-        new (&_data) U(std::Forward<T>(value));
+        new (&_data) U(std::forward<T>(value));
         _typeIndex = std::type_index(typeid(U));
     }
 
     Variant& operator=(const Variant &old)
     {
-        Copy(old._typeIndex, &old._data, &_data);
+        helper_t::copy(old._typeIndex, &old._data, &_data);
         _typeIndex = old._typeIndex;
         return *this;
     }
     Variant& operator=(Variant &&old)
     {
-        Move(old._typeIndex, &old._data, &_data);
+        helper_t::move(old._typeIndex, &old._data, &_data);
         _typeIndex = old._typeIndex;
         return *this;
     }
@@ -216,11 +222,11 @@ public:
             throw std::bad_cast();
         }
 
-        return *(U*)(_data);
+        return *(U*)(&_data);
     }
 
     template<typename T>
-    int indexOf()
+    int GetIndexOf()
     {
         return IndexOf<T, Types...>::value;
     }
@@ -240,7 +246,9 @@ public:
 	{
 		using T = typename function_traits<F>::args<0>::type;
 		if (Is<T>())
-			f(Get<T>());
+		{
+            f(Get<T>());
+        }
 	}
 
 	template<typename F, typename... Rest>
@@ -248,54 +256,14 @@ public:
 	{
 		using T = typename function_traits<F>::arg_type<0>;
 		if (Is<T>())
-			Visit(std::forward<F>(f));
+		{
+            Visit(std::forward<F>(f));
+        }
 		else
-			Visit(std::forward<Rest>(rest)...);
+		{
+            Visit(std::forward<Rest>(rest)...);
+        }
 	}
-
-
-private:
-    void Destroy(const std::type_index &index, void *buff)
-    {
-        [](Types&&...){}((Destroy0<Types>(index, buff), 0)...);
-    }
-
-    template<typename T>
-    void Destroy0(const std::type_index &id, void *data)
-    {
-        if (id == std::type_index(typeid(T)))
-        {
-            reinterpret_cast<T*>(data)->~T();
-        }
-    }
-
-    void Move(const std::type_index &old_t, void *old_v, void *new_v)
-    {
-        [](Types&&...){} ((Move0(old_t, old_v, new_v), 0)...);
-    }
-
-    template<typename T>
-    void Move0(const std::type_index &old_t, void *old_v, void *new_v)
-    {
-        if (old_t == std::type_index(typeid(T)))
-        {
-            new (new_v) T(std::move(*reinterpret_cast<T*>(old_v)));
-        }
-    }
-
-    void Copy(const std::type_index &old_t, const void *old_v, void *new_v)
-    {
-        [](Types&&...){} ((Copy0(old_t, old_v, new_v), 0)...);
-    }
-
-    template<typename T>
-    void Copy0(const std::type_index &old_t, const void *old_v, void *new_v)
-    {
-        if (old_t == std::type_index(typeid(T)))
-        {
-            new (new_v) T(*reinterpret_cast<const T*>(old_v));
-        }
-    }
 
 private:
     enum 
@@ -310,8 +278,6 @@ private:
     data_t _data;
     std::type_index _typeIndex;
 };
-
-
 
 
 }
