@@ -12,7 +12,9 @@
 ** ******************************************************************************/
 #pragma once
 #include "common/CommHeader.hpp"
+#include "modules/FunctionTraits.hpp"
 #include <typeindex>
+
 
 namespace ccb
 {
@@ -25,27 +27,29 @@ class MaxInteger<arg> : public std::integral_constant<size_t, arg>
 {};
 
 template<size_t arg1, size_t arg2, size_t... rest>
-class MaxInteger<arg1, arg2, rest...> : public std::integral_constant<size_t,\
-( arg1 >= arg2 )\
-? MaxInteger<arg1, rest...>::value\
+class MaxInteger<arg1, arg2, rest...> : public std::integral_constant<size_t,
+( arg1 >= arg2 )
+? MaxInteger<arg1, rest...>::value
 : MaxInteger<arg2, rest...>::value> 
 {};
 
 
 /// \brief To get maximal `align`.
 template<typename... Args>
-class MaxAlign : public std::integral_constant<int,\
-IntegerMax<std::alignment_of<Args>::value...>::value>
+class MaxAlign : public std::integral_constant<int, 
+MaxInteger<std::alignment_of<Args>::value...>::value>
 {};
 
 
 /// \brief To check if containing type.
 template<typename T, typename... Lists>
-class Contains;
+class Contains : public std::true_type
+{};
 
 template<typename T, typename Head, typename... Rest>
-class Contains<T, Head, Rest...>: public std::conditional<\
-std::is_same<T, Head>::value, std::true_type, Contains<T, Rest...>>::type
+class Contains<T, Head, Rest...>: public std::conditional<
+std::is_same<T, Head>::value, 
+std::true_type, Contains<T, Rest...>>::type
 {};
 
 template<typename T>
@@ -94,7 +98,49 @@ class At<0, T, Types...>
 };
 
 
-/// \brief Variant used to take place union.
+/// \brief Variant helper.
+/// This is not necessary now, for its functiona have been implemented in Variant.
+template<typename... Args>
+class VariantHelper;
+
+template<typename T, typename... Args>
+class VariantHelper<T, Args...> 
+{
+	inline static void Destroy(std::type_index id, void * data)
+	{
+		if (id == std::type_index(typeid(T)))
+			reinterpret_cast<T*>(data)->~T();
+		else
+			VariantHelper<Args...>::Destroy(id, data);
+	}
+
+	inline static void move(std::type_index old_t, void * old_v, void * new_v)
+	{
+		if (old_t == std::type_index(typeid(T)))
+			new (new_v) T(std::move(*reinterpret_cast<T*>(old_v)));
+		else
+			VariantHelper<Args...>::move(old_t, old_v, new_v);
+	}
+
+	inline static void copy(std::type_index old_t, const void * old_v, void * new_v)
+	{
+		if (old_t == std::type_index(typeid(T)))
+			new (new_v) T(*reinterpret_cast<const T*>(old_v));
+		else
+			VariantHelper<Args...>::copy(old_t, old_v, new_v);
+	}
+};
+
+template<>
+class VariantHelper<>  
+{
+	inline static void Destroy(std::type_index id, void * data) {  }
+	inline static void move(std::type_index old_t, void * old_v, void * new_v) { }
+	inline static void copy(std::type_index old_t, const void * old_v, void * new_v) { }
+};
+
+
+/// \brief Variant used to take place of union.
 template<typename... Types>
 class Variant
 {
@@ -117,9 +163,9 @@ public:
         Destroy(_typeIndex, &_data);
     }
 
-    template<typename T,class=typename std::enable_if<Contains<\
-    typename std::decay<T>::type, Types...>::value >::type>
-    Variant<T>(T &&value) : _typeIndex(typeid(void))
+    template<typename T, class=typename std::enable_if<Contains<
+    typename std::decay<T>::type, Types...>::value>::type>
+    Variant(T &&value) : _typeIndex(typeid(void))
     {
         Destroy(_typeIndex, &_data);
 
@@ -158,7 +204,7 @@ public:
     }
 
     template<typename T>
-    typename std::decay<T>::type& get()
+    typename std::decay<T>::type& Get()
     {
         using U = typename std::decay<T>::type;
         if (!Is<U>())
@@ -188,6 +234,25 @@ public:
     {
         return _typeIndex < rhs._typeIndex;
     }
+
+	template<typename F>
+	void Visit(F&& f)
+	{
+		using T = typename function_traits<F>::args<0>::type;
+		if (Is<T>())
+			f(Get<T>());
+	}
+
+	template<typename F, typename... Rest>
+	void Visit(F&& f, Rest&&... rest)
+	{
+		using T = typename function_traits<F>::arg_type<0>;
+		if (Is<T>())
+			Visit(std::forward<F>(f));
+		else
+			Visit(std::forward<Rest>(rest)...);
+	}
+
 
 private:
     void Destroy(const std::type_index &index, void *buff)
@@ -236,14 +301,17 @@ private:
     enum 
     {
         data_size = MaxInteger<sizeof(Types)...>::value,
-        align_size = MaxAlign<Types...>::value;
+        align_size = MaxAlign<Types...>::value,
     };
 
     using data_t = typename std::aligned_storage<data_size, align_size>::type;
+    using helper_t = typename VariantHelper<Types...>;
 
     data_t _data;
     std::type_index _typeIndex;
 };
+
+
 
 
 }
