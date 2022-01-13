@@ -46,5 +46,14 @@ TEST_CASE("tests of function GetArgByIndex")
 }
 
 
+TEST_CASE("tests of function apply")
+{
+    auto func = [](int a, int b)->int{ return a+b; };
 
+    SECTION("tests")
+    {
+        auto res = apply(func, MakeIndexes<2>::type(), std::make_tuple(1, 2));
+        CHECK(res == 3);
+    }
+}
 
