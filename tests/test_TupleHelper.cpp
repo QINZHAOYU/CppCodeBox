@@ -4,7 +4,7 @@
 using namespace ccb;
 
 
-TEST_CASE("tests of class TuplePrinter")
+TEST_CASE("tests of struct TuplePrinter")
 {
     SECTION("tests")
     {
@@ -14,7 +14,7 @@ TEST_CASE("tests of class TuplePrinter")
 }
 
 
-TEST_CASE("tests of class findInex")
+TEST_CASE("tests of struct findInex")
 {
     SECTION("tests")
     {
@@ -23,4 +23,28 @@ TEST_CASE("tests of class findInex")
         CHECK(index == 2);
     }
 }
+
+
+
+TEST_CASE("tests of function GetArgByIndex")
+{
+    SECTION("tests")
+    {
+        using Tuple = tuple<int, double, string, int>;
+        Tuple tp = std::make_tuple(1, 12.2, "hello", 23);
+
+        const size_t len = std::tuple_size<Tuple>::value;
+
+        for (size_t i = 0; i < len; ++i)
+        {
+            GetArgByIndex<0>(i, tp);
+        }
+
+        REQUIRE_THROWS_AS(GetArgByIndex(4, tp), std::invalid_argument);
+
+    }
+}
+
+
+
 
