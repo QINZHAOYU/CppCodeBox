@@ -17,7 +17,7 @@ TEST_CASE("tests of class ScopeGuard")
     SECTION("exception exit")
     {
         auto gd = MakeGuard(f);
-        throw std::exception("test exception.");
+        throw std::logic_error("test exception.");
     }
 
     SECTION("unnormal exit")

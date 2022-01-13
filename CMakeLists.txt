@@ -16,7 +16,7 @@ project(${ProjectName} VERSION 21.10.0)
 
 # 设置指定C++编译器版本。
 include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++17" COMPILER_SUPPORTS_CXX17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(COMPILER_SUPPORTS_CXX11)
     if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -43,7 +43,7 @@ if(MSVC)
 endif()
 
 # 选择是否生成动态库。
-option(GEN_DLL "If generate dynamic link library" ON)
+option(GEN_DLL "If generate dynamic link library" OFF)
 message(STATUS "If generate dynamic link library(GEN_DLL): ${GEN_DLL}")
 if (GEN_DLL)
     add_definitions(-D DLLEXPORT)

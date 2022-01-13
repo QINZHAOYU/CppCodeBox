@@ -244,7 +244,7 @@ public:
 	template<typename F>
 	void Visit(F&& f)
 	{
-		using T = typename function_traits<F>::args<0>::type;
+		using T = typename function_traits<F>::template args<0>::type;
 		if (Is<T>())
 		{
             f(Get<T>());
@@ -254,7 +254,7 @@ public:
 	template<typename F, typename... Rest>
 	void Visit(F&& f, Rest&&... rest)
 	{
-		using T = typename function_traits<F>::arg_type<0>;
+		using T = typename function_traits<F>::template arg_type<0>;
 		if (Is<T>())
 		{
             Visit(std::forward<F>(f));
@@ -273,7 +273,8 @@ private:
     };
 
     using data_t = typename std::aligned_storage<data_size, align_size>::type;
-    using helper_t = typename VariantHelper<Types...>;
+    // using helper_t = typename VariantHelper<Types...>;
+    using helper_t = VariantHelper<Types...>;
 
     data_t _data;
     std::type_index _typeIndex;

@@ -144,10 +144,12 @@ template<int N, int... Indexes>
 struct MakeIndexes : MakeIndexes<N-1, N-1, Indexes...>
 {};
 
-template<int... indexes>
-struct MakeIndexes<0, indexes...>
+template<int... Indexes>
+struct MakeIndexes<0, Indexes...>
 {
-    using type = typename IndexTuple<indexes...>;
+    // using type = typename IndexTuple<Indexes...>;
+    using type = IndexTuple<Indexes...>;
+    // typedef IndexTuple<Indexes...> type;
 };
 
 template<typename F, typename Tuple, int... Indexes>

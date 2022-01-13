@@ -85,7 +85,7 @@ class function_traits<Ret(ClassType::*)(Args...) const volatile> : public functi
 
 /// \brief Function traits for function object.
 template<typename Callable>
-class function_traits : public function_traits<decltype(&callable::operator())>
+class function_traits : public function_traits<decltype(&Callable::operator())>
 {};
 
 
