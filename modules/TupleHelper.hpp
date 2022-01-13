@@ -12,6 +12,7 @@
 ** ******************************************************************************/
 #pragma once
 #include "common/CommHeader.hpp"
+#include <type_traits>
 
 
 namespace ccb
@@ -65,6 +66,7 @@ bool compare(...)
 
 
 /// \brief To find index with given value.
+/// Note that this function would return index of first matched element.
 template<int I, typename T, typename... Args>
 struct findIndex
 {
@@ -92,6 +94,47 @@ int findIndex(const std::tuple<Args...> &t, T &&val)
 {
     return detail::findIndex<sizeof...(Args), T, Args...>::call(t, std::forward<T>(val));
 }
+
+
+/// \brief To get value at given index in runtime.
+template<size_t k, typename Tuple>
+typename std::enable_if<(k == std::tuple_size<Tuple>::value)>::type
+GetArgByIndex(size_t index, Tuple &tp)
+{
+    throw std::invalid_argument("arg index out of range.");
+}
+
+// because the `k` is not appeared in input arguments, therefore,
+// there is no automatic derivation of its type. While `Tuple` does.
+//
+// template can be instantiated (partial) explicitly and implicitly.
+// explicit instantiation can improve efficiency. it used as
+// `tempalte void func<T>(T)`; It is also important to distinguish
+// between explicit instantiation and explicit materialization.
+//
+// template can be specialized by templates.
+// template can be overloaded.
+//
+// template parameters can be non-type(built-on types, limited to
+// + int/char/long/unsigned/bool/short/size_t, 
+// + pointers and lvalue references to objects)
+// which must be compile-time constants, a constant of a fixed type.
+
+template<size_t k=0, typename Tuple>
+typename std::enable_if<(k < std::tuple_size<Tuple>::value)>::type
+GetArgByIndex(size_t index, Tuple &tp)
+{
+    if (k == index)
+    {
+        cout << std::get<k>(tp) << endl;
+    }
+    else
+    {
+        GetArgByIndex<k+1>(index, tp); // k++.
+    }
+}
+
+
 
 
 }
