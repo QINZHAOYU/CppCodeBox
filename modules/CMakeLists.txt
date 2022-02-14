@@ -4,6 +4,14 @@ set(LibName MyCppKits)
 file(GLOB_RECURSE lib_src_cpp ${PROJECT_SOURCE_DIR}/modules/*.cpp ${PROJECT_SOURCE_DIR}/modules/*.c)
 file(GLOB_RECURSE lib_src_inc ${PROJECT_SOURCE_DIR}/modules/*.hpp ${PROJECT_SOURCE_DIR}/modules/*.h)
 
+# 动态库隐式加载，首先加载导入库。
+set(HdfPath $ENV{CPPLIBS}/hdf5)
+file(GLOB  HDF_LIBS   ${HdfPath}/Release/*.lib)
+if (NOT HDF_LIBS)
+    message(FATAL "${HdfPath} HDF5_LIBS not found")
+endif ()
+
+
 # 生成静态库。
 add_library(${LibName}  STATIC  ${lib_src_cpp}  ${lib_src_inc})
 set_target_properties(${LibName} PROPERTIES PREFIX "")
@@ -12,9 +20,14 @@ set_target_properties(${LibName} PROPERTIES PREFIX "")
 if (${GEN_DLL})
     message(STATUS "${LibName} library generation started.")
     
-    add_library(${LibName}_dll SHARED ${lib_src_cpp} ${lib_src_inc} ${VERSIONINFO_RC})
+    add_library(${LibName}_dll SHARED 
+        ${lib_src_cpp} 
+        ${lib_src_inc} 
+        ${VERSIONINFO_RC}
+    )
     target_include_directories(${LibName}_dll 
         PUBLIC  "${PROJECT_SOURCE_DIR}"
+        PUBLIC  "${HdfPath}/include"
         )
 
     # 设置动态库版本号及输出名。
@@ -29,7 +42,11 @@ endif()
 # 添加搜索路径。
 target_include_directories(${LibName} 
     PUBLIC  "${PROJECT_SOURCE_DIR}"
-)
+    PUBLIC  "${HdfPath}/include/"
+    )
+target_link_libraries(${LibName}  
+    PUBLIC ${HDF_LIBS}
+    )
 
 # 安装库和头文件。
 install(TARGETS ${LibName}  DESTINATION dists/lib)
