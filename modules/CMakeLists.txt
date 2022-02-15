@@ -4,9 +4,10 @@ set(LibName MyCppKits)
 file(GLOB_RECURSE lib_src_cpp ${PROJECT_SOURCE_DIR}/modules/*.cpp ${PROJECT_SOURCE_DIR}/modules/*.c)
 file(GLOB_RECURSE lib_src_inc ${PROJECT_SOURCE_DIR}/modules/*.hpp ${PROJECT_SOURCE_DIR}/modules/*.h)
 
-# 动态库隐式加载，首先加载导入库。
+# 动态库隐式加载，首先加载导入库(不再采用)。
+# 静态库加载libHdf5.lib。
 set(HdfPath $ENV{CPPLIBS}/hdf5)
-file(GLOB  HDF_LIBS   ${HdfPath}/Release/*.lib)
+file(GLOB  HDF_LIBS ${HdfPath}/lib/*.lib)
 if (NOT HDF_LIBS)
     message(FATAL "${HdfPath} HDF5_LIBS not found")
 endif ()
