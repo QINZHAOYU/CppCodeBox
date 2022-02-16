@@ -25,9 +25,13 @@ int main(int argc, char *argv[])
 
         cout << "----------------------- started." << endl;
 
-        hdf5_file_create_close();
+        hdf5_file_create_close(); // 每次重写
         hdf5_group_create_close();
         hdf5_group_check();
+        hdf5_dataset_create_write();
+        hdf5_dataset_read();
+        // hdf5_subset_read();
+        hdf5_bocks_compress('z');
 
         printHello();
         cout << "my sqrt(): " << mysqrt(4) << endl;
