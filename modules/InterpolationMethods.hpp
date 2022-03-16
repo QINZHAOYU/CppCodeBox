@@ -15,17 +15,44 @@
 
 namespace ccb
 {
+using std::vector;
 
-/// \brief 牛顿插值法。
-/// 如果指定的 `order` 阶插值无效，则算法会自动降阶。目前进支持多项式函数插值。
-///
-/// \param x 现有散点的 x 值数组
-/// \param y 现有散点的 y 值数组
-/// \param n 现有散点数组的长度
-/// \param tarX 待插值的 x 值
-/// \param order 牛顿插值法阶数
-/// \return 牛顿插值结果。
-/// \todo 增强算法对于诸如三角函数等的支持。
-double NewtonInterpolation(double x[], double y[], int n, double tarX, int order);
+class IInterpolation
+{
+public:
+    virtual bool CheckDuplicate(const vector<double> &x);
+    virtual void SortCurve(vector<double> &x, vector<double> &y);
+    virtual void RemoveDuplicateAfterSort(vector<double> &x, vector<double> &y);
+    virtual void RemoveElements(vector<double> &arr, vector<int> &elemIndexes);
+
+    virtual void   Clear()                                                       = 0;
+    virtual void   SetRawCurve(const vector<double> &x, const vector<double> &y) = 0;
+    virtual void   SetRawCurve(double x[], double y[], int num)                  = 0;
+    virtual void   CheckInterpolationOrder(int &order)                           = 0;
+    virtual double Interpolate(double tarX, int order)                           = 0;
+};
+
+
+class NewtonInterpolation : public IInterpolation
+{
+public:
+    NewtonInterpolation();
+
+    void Clear() override;
+    void SetRawCurve(const vector<double> &x, const vector<double> &y) override;
+    void SetRawCurve(double x[], double y[], int num) override;
+
+    void   CheckInterpolationOrder(int &order) override;
+    double Interpolate(double tarX, int order) override;
+
+private:
+    void GenerateDerivative();
+    int  FindInterpolateRangeStartIndex(double tarX, int order);
+
+private:
+    bool                   _hasDerivative = false;
+    vector<vector<double>> _rawCurve;
+    vector<vector<double>> _derivative;
+};
 
 } // namespace ccb
